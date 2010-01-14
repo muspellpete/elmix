@@ -113,11 +113,11 @@ stripAliases queryTwo =
 
 
 type alias Response =
-    WeatherTypeTwo
+    Maybe WeatherTypeTwo
 
 query : SelectionSet Response RootQuery
 query =
-    Query.samples identity weatherTypeInfoSelection
+    Query.samples identity WeatherType
 
 type alias WeatherTypeTwo =
     { cloudy : Bool
@@ -125,12 +125,12 @@ type alias WeatherTypeTwo =
     , moisture : Int
     }
 
-weatherTypeInfoSelection : SelectionSet WeatherTypeTwo Api.Object.WeatherType
-weatherTypeInfoSelection =
-    SelectionSet.map3 WeatherTypeTwo
-        WeatherType.cloudy
-        WeatherType.id
-        WeatherType.moisture
+-- weatherTypeInfoSelection : SelectionSet WeatherTypeTwo Api.Object.WeatherType
+-- weatherTypeInfoSelection =
+--     SelectionSet.map3 WeatherTypeTwo
+--         WeatherType.cloudy
+--         WeatherType.id
+--         WeatherType.moisture
 
 makeRequest : Cmd Msg
 makeRequest =
