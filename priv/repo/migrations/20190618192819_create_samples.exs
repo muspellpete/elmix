@@ -3,7 +3,7 @@ defmodule Elmix.Repo.Migrations.CreateSamples do
 
   def change do
     create table(:samples) do
-     add :temperatue, :integer
+     add :temperature, :integer
      add :moisture, :integer
      add :cloudy, :boolean, default: false, null: false
     

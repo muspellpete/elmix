@@ -5,7 +5,7 @@ defmodule Elmix.Metrology.Weather do
   schema "samples" do
     field :cloudy, :boolean, default: false
     field :moisture, :integer
-    field :temperatue, :integer
+    field :temperature, :integer
 
     timestamps()
   end
@@ -13,8 +13,8 @@ defmodule Elmix.Metrology.Weather do
   @doc false
   def changeset(weather, attrs) do
     weather
-    |> cast(attrs, [:temperatue, :moisture, :cloudy])
-    |> validate_required([:temperatue, :moisture, :cloudy])
+    |> cast(attrs, [:temperature, :moisture, :cloudy])
+    |> validate_required([:temperature, :moisture, :cloudy])
     |> validate_temperature(:temperature)
   end
 
