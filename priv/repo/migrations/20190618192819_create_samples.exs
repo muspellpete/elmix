@@ -9,6 +9,5 @@ defmodule Elmix.Repo.Migrations.CreateSamples do
 
       timestamps()
     end
-
   end
 end

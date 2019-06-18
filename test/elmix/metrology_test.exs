@@ -7,7 +7,11 @@ defmodule Elmix.MetrologyTest do
     alias Elmix.Metrology.Weather
 
     @valid_attrs %{cloudy: true, moisture: "some moisture", temperatue: "some temperatue"}
-    @update_attrs %{cloudy: false, moisture: "some updated moisture", temperatue: "some updated temperatue"}
+    @update_attrs %{
+      cloudy: false,
+      moisture: "some updated moisture",
+      temperatue: "some updated temperatue"
+    }
     @invalid_attrs %{cloudy: nil, moisture: nil, temperatue: nil}
 
     def weather_fixture(attrs \\ %{}) do
