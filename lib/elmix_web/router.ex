@@ -14,13 +14,16 @@ defmodule ElmixWeb.Router do
   end
 
   scope "/", ElmixWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
+   pipe_through :browser
+   get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ElmixWeb do
-  #   pipe_through :api
-  # end
+  scope "/api" do
+    pipe_through :api
+    forward("/graphql", Absinthe.Plug, schema: ElmixWeb.Schema)
+
+    if Mix.env() == :dev do
+      forward("/graphiql", Absinthe.Plug.GraphiQL, schema: ElmixWeb.Schema)
+    end
+  end
 end
