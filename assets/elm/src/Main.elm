@@ -26,9 +26,9 @@ type alias Weather =
 type alias Flags =
     ()
 
---samplesInfoSelection : SelectionSet WeatherType Api.Object.WeatherType
+--samplesInfoSelection : SelectionSet Weather Api.Object.WeatherType
 --samplesInfoSelection =
---    SelectionSet.map3 WeatherType
+--    SelectionSet.map3 Weather
 --        WeatherType.moisture
 --        WeatherType.cloudy
 --        WeatherType.id
@@ -36,16 +36,19 @@ type alias Flags =
 --query : SelectionSet Response RootQuery
 --query =
 --    Query.samples identity samplesInfoSelection
+            
 
 samplesInfoSelection : SelectionSet Weather Api.Object.WeatherType
 samplesInfoSelection =
-    SelectionSet.map2 Weather
-        WeatherType.moisture
-        WeatherType.cloudy
+    SelectionSet.map4 Weather
+        (WeatherType.moisture |> SelectionSet.nonNullOrFail)
+        (WeatherType.cloudy |> SelectionSet.nonNullOrFail)
+        (WeatherType.id |> SelectionSet.nonNullOrFail)
+        (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
-query : SelectionSet Weather RootQuery
-query =
-    Query.samples identity samplesInfoSelection
+query : SelectionSet (List Weather) RootQuery
+query = 
+    Query.samples samplesInfoSelection
 
 makeRequest : Cmd Msg
 makeRequest =
