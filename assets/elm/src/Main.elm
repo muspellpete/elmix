@@ -14,7 +14,7 @@ type Msg =
     GotResponse Model
 
 type alias Model =
-    RemoteData (Graphql.Http.Error Weather) Weather
+    RemoteData (Graphql.Http.Error (List Weather)) (List Weather)
 
 type alias Weather =
     { moisture : Int
