@@ -44,3 +44,7 @@ erl_crash.dump
 *.beam
 /config/*.secret.exs
 >>>>>>> 4aa63ba459bc6239f58b018ab90e078f9a8a562f
+
+# elm
+elm-stuff
+repl-temp-*
