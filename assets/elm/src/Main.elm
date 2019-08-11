@@ -14,7 +14,7 @@ type Msg =
     GotResponse Model
 
 type alias Model =
-    RemoteData (Graphql.Http.Error (List Weather)) (List Weather)
+    RemoteData (Graphql.Http.Error (Maybe(List (Maybe Weather)))) (Maybe(List (Maybe Weather)))
 
 type alias Weather =
     { moisture : Int
@@ -26,18 +26,6 @@ type alias Weather =
 type alias Flags =
     ()
 
---samplesInfoSelection : SelectionSet Weather Api.Object.WeatherType
---samplesInfoSelection =
---    SelectionSet.map3 Weather
---        WeatherType.moisture
---        WeatherType.cloudy
---        WeatherType.id
-
---query : SelectionSet Response RootQuery
---query =
---    Query.samples identity samplesInfoSelection
-            
-
 samplesInfoSelection : SelectionSet Weather Api.Object.WeatherType
 samplesInfoSelection =
     SelectionSet.map4 Weather
@@ -46,7 +34,7 @@ samplesInfoSelection =
         (WeatherType.id |> SelectionSet.nonNullOrFail)
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
-query : SelectionSet (List Weather) RootQuery
+query : SelectionSet (Maybe (List (Maybe Weather))) RootQuery
 query = 
     Query.samples samplesInfoSelection
 
