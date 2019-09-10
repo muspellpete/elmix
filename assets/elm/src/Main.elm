@@ -56,7 +56,7 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    {title = "Title", body = [text "Yes"]}
+    {title = "Title", body = [text "Yes once again!"]}
 
 main : Program Flags Model Msg
 main =
