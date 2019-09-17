@@ -59,8 +59,14 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [text ("Success: " ++ Debug.toString contentWhatsit)]}
+        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [(printContents contentWhatsit)]}
         RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text ("Error: " ++ Debug.toString contentWhatsit)]}
+
+printContents : Maybe(List (Maybe Weather)) -> Html Msg
+printContents weathers =
+    case weathers of
+        Nothing -> text "Nothing"
+        Just weathersReal -> text ("Number of samples: " ++ String.fromInt (List.length weathersReal))
 
 main : Program Flags Model Msg
 main =

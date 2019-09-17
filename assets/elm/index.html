@@ -7078,7 +7078,6 @@ var author$project$Main$update = F2(
 		var response = msg.a;
 		return _Utils_Tuple2(response, elm$core$Platform$Cmd$none);
 	});
-var elm$core$Debug$toString = _Debug_toString;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -7093,6 +7092,17 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var author$project$Main$printContents = function (weathers) {
+	if (weathers.$ === 'Nothing') {
+		return elm$html$Html$text('Nothing');
+	} else {
+		var weathersReal = weathers.a;
+		return elm$html$Html$text(
+			'Number of samples: ' + elm$core$String$fromInt(
+				elm$core$List$length(weathersReal)));
+	}
+};
+var elm$core$Debug$toString = _Debug_toString;
 var author$project$Main$view = function (model) {
 	switch (model.$) {
 		case 'NotAsked':
@@ -7116,8 +7126,7 @@ var author$project$Main$view = function (model) {
 			return {
 				body: _List_fromArray(
 					[
-						elm$html$Html$text(
-						'Success: ' + elm$core$Debug$toString(contentWhatsit))
+						author$project$Main$printContents(contentWhatsit)
 					]),
 				title: 'This is my title'
 			};
