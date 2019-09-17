@@ -41,7 +41,7 @@ query =
 makeRequest : Cmd Msg
 makeRequest =
     query
-        |> Graphql.Http.queryRequest "https://localhost:4000/api/graphql"
+        |> Graphql.Http.queryRequest "http://192.168.1.5:4000/api/graphql"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 init : Flags -> (Model, Cmd Msg)
@@ -60,7 +60,7 @@ view model =
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
         RemoteData.Success contentWhatsit -> {title = "This is my title", body = [text "Success"]}
-        RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text "Failure"]}
+        RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text ("Error: " ++ Debug.toString contentWhatsit)]}
 
 main : Program Flags Model Msg
 main =
