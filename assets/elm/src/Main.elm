@@ -41,7 +41,7 @@ query =
 makeRequest : Cmd Msg
 makeRequest =
     query
-        |> Graphql.Http.queryRequest "http://192.168.1.5:4000/api/graphql"
+        |> Graphql.Http.queryRequest "/api/graphql"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 init : Flags -> (Model, Cmd Msg)

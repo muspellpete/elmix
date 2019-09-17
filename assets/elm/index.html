@@ -7066,7 +7066,7 @@ var krisajenkins$remotedata$RemoteData$fromResult = function (result) {
 var author$project$Main$makeRequest = A2(
 	dillonkearns$elm_graphql$Graphql$Http$send,
 	A2(elm$core$Basics$composeR, krisajenkins$remotedata$RemoteData$fromResult, author$project$Main$GotResponse),
-	A2(dillonkearns$elm_graphql$Graphql$Http$queryRequest, 'http://192.168.1.5:4000/api/graphql', author$project$Main$query));
+	A2(dillonkearns$elm_graphql$Graphql$Http$queryRequest, '/api/graphql', author$project$Main$query));
 var krisajenkins$remotedata$RemoteData$Loading = {$: 'Loading'};
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(krisajenkins$remotedata$RemoteData$Loading, author$project$Main$makeRequest);
