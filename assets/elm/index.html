@@ -7093,13 +7093,42 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var author$project$Main$view = function (model) {
-	return {
-		body: _List_fromArray(
-			[
-				elm$html$Html$text('Yes once again!')
-			]),
-		title: 'Title'
-	};
+	switch (model.$) {
+		case 'NotAsked':
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Not asked')
+					]),
+				title: 'This is my title'
+			};
+		case 'Loading':
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Loading')
+					]),
+				title: 'This is my title'
+			};
+		case 'Success':
+			var contentWhatsit = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Success')
+					]),
+				title: 'This is my title'
+			};
+		default:
+			var contentWhatsit = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Failure')
+					]),
+				title: 'This is my title'
+			};
+	}
 };
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};

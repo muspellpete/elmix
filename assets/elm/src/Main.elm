@@ -56,7 +56,11 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    {title = "Title", body = [text "Yes once again!"]}
+    case model of
+        RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
+        RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
+        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [text "Success"]}
+        RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text "Failure"]}
 
 main : Program Flags Model Msg
 main =
