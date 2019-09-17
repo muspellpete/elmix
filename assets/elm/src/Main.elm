@@ -37,7 +37,7 @@ samplesInfoSelection =
         (WeatherType.id |> SelectionSet.nonNullOrFail)
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
-query : SelectionSet (Maybe (List (Maybe Weather))) RootQuery
+query : SelectionSet Response RootQuery
 query = 
     Query.samples samplesInfoSelection
 
