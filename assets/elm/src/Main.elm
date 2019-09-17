@@ -59,7 +59,7 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [text "Success"]}
+        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [text ("Success: " ++ Debug.toString contentWhatsit)]}
         RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text ("Error: " ++ Debug.toString contentWhatsit)]}
 
 main : Program Flags Model Msg
