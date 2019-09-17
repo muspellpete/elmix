@@ -7066,7 +7066,7 @@ var krisajenkins$remotedata$RemoteData$fromResult = function (result) {
 var author$project$Main$makeRequest = A2(
 	dillonkearns$elm_graphql$Graphql$Http$send,
 	A2(elm$core$Basics$composeR, krisajenkins$remotedata$RemoteData$fromResult, author$project$Main$GotResponse),
-	A2(dillonkearns$elm_graphql$Graphql$Http$queryRequest, 'https://localhost:4000/api/graphql', author$project$Main$query));
+	A2(dillonkearns$elm_graphql$Graphql$Http$queryRequest, 'http://192.168.1.5:4000/api/graphql', author$project$Main$query));
 var krisajenkins$remotedata$RemoteData$Loading = {$: 'Loading'};
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(krisajenkins$remotedata$RemoteData$Loading, author$project$Main$makeRequest);
@@ -7078,6 +7078,7 @@ var author$project$Main$update = F2(
 		var response = msg.a;
 		return _Utils_Tuple2(response, elm$core$Platform$Cmd$none);
 	});
+var elm$core$Debug$toString = _Debug_toString;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -7093,13 +7094,44 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var author$project$Main$view = function (model) {
-	return {
-		body: _List_fromArray(
-			[
-				elm$html$Html$text('Yes')
-			]),
-		title: 'Title'
-	};
+	switch (model.$) {
+		case 'NotAsked':
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Not asked')
+					]),
+				title: 'This is my title'
+			};
+		case 'Loading':
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text('Loading')
+					]),
+				title: 'This is my title'
+			};
+		case 'Success':
+			var contentWhatsit = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text(
+						'Success: ' + elm$core$Debug$toString(contentWhatsit))
+					]),
+				title: 'This is my title'
+			};
+		default:
+			var contentWhatsit = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						elm$html$Html$text(
+						'Error: ' + elm$core$Debug$toString(contentWhatsit))
+					]),
+				title: 'This is my title'
+			};
+	}
 };
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
