@@ -7092,17 +7092,16 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var author$project$Main$printContents = function (weathers) {
-	if (weathers.$ === 'Nothing') {
+var author$project$Main$printContents = function (response) {
+	if (response.$ === 'Nothing') {
 		return elm$html$Html$text('Nothing');
 	} else {
-		var weathersReal = weathers.a;
+		var weathersReal = response.a;
 		return elm$html$Html$text(
-			'Number of samples: ' + elm$core$String$fromInt(
+			'Number of samples are: ' + elm$core$String$fromInt(
 				elm$core$List$length(weathersReal)));
 	}
 };
-var elm$core$Debug$toString = _Debug_toString;
 var author$project$Main$view = function (model) {
 	switch (model.$) {
 		case 'NotAsked':
@@ -7122,21 +7121,20 @@ var author$project$Main$view = function (model) {
 				title: 'This is my title'
 			};
 		case 'Success':
-			var contentWhatsit = model.a;
+			var success = model.a;
 			return {
 				body: _List_fromArray(
 					[
-						author$project$Main$printContents(contentWhatsit)
+						author$project$Main$printContents(success)
 					]),
 				title: 'This is my title'
 			};
 		default:
-			var contentWhatsit = model.a;
+			var message = model.a;
 			return {
 				body: _List_fromArray(
 					[
-						elm$html$Html$text(
-						'Error: ' + elm$core$Debug$toString(contentWhatsit))
+						elm$html$Html$text('Error occured while fetching data')
 					]),
 				title: 'This is my title'
 			};

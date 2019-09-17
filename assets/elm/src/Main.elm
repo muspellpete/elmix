@@ -13,8 +13,11 @@ import Html exposing (Html, div, text)
 type Msg =
     GotResponse Model
 
+type alias Response =
+    Maybe (List (Maybe Weather))
+
 type alias Model =
-    RemoteData (Graphql.Http.Error (Maybe(List (Maybe Weather)))) (Maybe(List (Maybe Weather)))
+    RemoteData (Graphql.Http.Error Response) Response
 
 type alias Weather =
     { moisture : Int
@@ -59,14 +62,14 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [(printContents contentWhatsit)]}
-        RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text ("Error: " ++ Debug.toString contentWhatsit)]}
+        RemoteData.Success success -> {title = "This is my title", body = [(printContents success)]}
+        RemoteData.Failure message -> {title = "This is my title", body = [text "Error occured while fetching data"]}
 
-printContents : Maybe(List (Maybe Weather)) -> Html Msg
-printContents weathers =
-    case weathers of
+printContents : Response -> Html Msg
+printContents response =
+    case response of
         Nothing -> text "Nothing"
-        Just weathersReal -> text ("Number of samples: " ++ String.fromInt (List.length weathersReal))
+        Just weathersReal -> text ("Number of samples are: " ++ String.fromInt (List.length weathersReal))
 
 main : Program Flags Model Msg
 main =
