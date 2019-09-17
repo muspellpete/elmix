@@ -7078,6 +7078,18 @@ var author$project$Main$update = F2(
 		var response = msg.a;
 		return _Utils_Tuple2(response, elm$core$Platform$Cmd$none);
 	});
+var author$project$Main$stringify = function (weatherData) {
+	return 'Number of samples are: ' + elm$core$String$fromInt(
+		elm$core$List$length(weatherData));
+};
+var author$project$Main$extractData = function (response) {
+	if (response.$ === 'Nothing') {
+		return 'Nothing';
+	} else {
+		var weatherData = response.a;
+		return author$project$Main$stringify(weatherData);
+	}
+};
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -7092,16 +7104,6 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var author$project$Main$printContents = function (response) {
-	if (response.$ === 'Nothing') {
-		return elm$html$Html$text('Nothing');
-	} else {
-		var weathersReal = response.a;
-		return elm$html$Html$text(
-			'Number of samples are: ' + elm$core$String$fromInt(
-				elm$core$List$length(weathersReal)));
-	}
-};
 var author$project$Main$view = function (model) {
 	switch (model.$) {
 		case 'NotAsked':
@@ -7121,11 +7123,12 @@ var author$project$Main$view = function (model) {
 				title: 'This is my title'
 			};
 		case 'Success':
-			var success = model.a;
+			var successResponse = model.a;
 			return {
 				body: _List_fromArray(
 					[
-						author$project$Main$printContents(success)
+						elm$html$Html$text(
+						author$project$Main$extractData(successResponse))
 					]),
 				title: 'This is my title'
 			};
@@ -7134,7 +7137,7 @@ var author$project$Main$view = function (model) {
 			return {
 				body: _List_fromArray(
 					[
-						elm$html$Html$text('Error occured while fetching data')
+						elm$html$Html$text('An error occured while fetching data')
 					]),
 				title: 'This is my title'
 			};

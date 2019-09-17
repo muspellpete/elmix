@@ -62,14 +62,18 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success success -> {title = "This is my title", body = [(printContents success)]}
-        RemoteData.Failure message -> {title = "This is my title", body = [text "Error occured while fetching data"]}
+        RemoteData.Success successResponse -> {title = "This is my title", body = [(extractData successResponse |> text)]}
+        RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
 
-printContents : Response -> Html Msg
-printContents response =
+extractData : Response -> String
+extractData response =
     case response of
-        Nothing -> text "Nothing"
-        Just weathersReal -> text ("Number of samples are: " ++ String.fromInt (List.length weathersReal))
+        Nothing -> "Nothing"
+        Just weatherData -> stringify weatherData
+
+stringify : List (Maybe Weather) -> String
+stringify weatherData =
+        "Number of samples are: " ++ String.fromInt (List.length weatherData)
 
 main : Program Flags Model Msg
 main =
