@@ -63,7 +63,7 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success successResponse -> {title = "This is my title", body = [div [class "text-5xl"] [extractData successResponse |> text]]}
+        RemoteData.Success successResponse -> {title = "This is my title", body = [div [class "bg-red-400"] [extractData successResponse |> text]]}
         RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
 
 extractData : Response -> String
