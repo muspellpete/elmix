@@ -61,10 +61,10 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     case model of
-        RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
-        RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success successResponse -> {title = "This is my title", body = createBody successResponse}
-        RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
+        RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
+        RemoteData.Loading -> {title = "Elmix", body = [text "Loading"]}
+        RemoteData.Success successResponse -> {title = "Elmix", body = createBody successResponse}
+        RemoteData.Failure message -> {title = "Elmix", body = [text "An error occured while fetching data"]}
 
 createBody : Response -> List (Html Msg)
 createBody response
