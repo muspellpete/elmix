@@ -9,12 +9,16 @@ import Graphql.Document as Document
 import RemoteData exposing (RemoteData)
 import Api.ScalarCodecs exposing (Id)
 import Html exposing (Html, div, text)
+import Html.Attributes exposing (..)
 
 type Msg =
     GotResponse Model
 
+type alias Response =
+    Maybe (List (Maybe Weather))
+
 type alias Model =
-    RemoteData (Graphql.Http.Error (Maybe(List (Maybe Weather)))) (Maybe(List (Maybe Weather)))
+    RemoteData (Graphql.Http.Error Response) Response
 
 type alias Weather =
     { moisture : Int
@@ -34,7 +38,7 @@ samplesInfoSelection =
         (WeatherType.id |> SelectionSet.nonNullOrFail)
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
-query : SelectionSet (Maybe (List (Maybe Weather))) RootQuery
+query : SelectionSet Response RootQuery
 query = 
     Query.samples samplesInfoSelection
 
@@ -59,14 +63,18 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success contentWhatsit -> {title = "This is my title", body = [(printContents contentWhatsit)]}
-        RemoteData.Failure contentWhatsit -> {title = "This is my title", body = [text ("Error: " ++ Debug.toString contentWhatsit)]}
+        RemoteData.Success successResponse -> {title = "This is my title", body = [div [class "bg-red-400"] [extractData successResponse |> text]]}
+        RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
 
-printContents : Maybe(List (Maybe Weather)) -> Html Msg
-printContents weathers =
-    case weathers of
-        Nothing -> text "Nothing"
-        Just weathersReal -> text ("Number of samples: " ++ String.fromInt (List.length weathersReal))
+extractData : Response -> String
+extractData response =
+    case response of
+        Nothing -> "Nothing"
+        Just weatherData -> stringify weatherData
+
+stringify : List (Maybe Weather) -> String
+stringify weatherData =
+        "Number of samples are: " ++ String.fromInt (List.length weatherData)
 
 main : Program Flags Model Msg
 main =
