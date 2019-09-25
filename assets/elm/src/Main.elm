@@ -9,6 +9,7 @@ import Graphql.Document as Document
 import RemoteData exposing (RemoteData)
 import Api.ScalarCodecs exposing (Id)
 import Html exposing (Html, div, text)
+import Html.Attributes exposing (..)
 
 type Msg =
     GotResponse Model
@@ -62,7 +63,7 @@ view model =
     case model of
         RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success successResponse -> {title = "This is my title", body = [(extractData successResponse |> text)]}
+        RemoteData.Success successResponse -> {title = "This is my title", body = [div [class "text-5xl"] [extractData successResponse |> text]]}
         RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
 
 extractData : Response -> String
