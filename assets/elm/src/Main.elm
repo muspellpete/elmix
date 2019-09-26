@@ -70,21 +70,38 @@ createBody : Response -> Html Msg
 createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]
-        Just weatherData -> ul [] (List.map extractWeather weatherData)
+        Just weatherData -> ul [] (
+            insertIndex weatherData
+            |> List.map extractWeather)
 
-extractWeather : Maybe Weather -> Html Msg
-extractWeather maybeWeather =
+insertIndex : List(Maybe Weather) -> List (Maybe Weather, Int)
+insertIndex weatherList =
+    List.map2 (\w n -> (w, n)) weatherList (List.range 1 (List.length weatherList))
+
+extractWeather : ((Maybe Weather), Int) -> Html Msg
+extractWeather (maybeWeather, number) =
     case maybeWeather of
-        Nothing -> li [] [text "Empty weather"]
-        Just weather -> li [class "bg-green-500"] [ul [] (prettyPrintWeather weather)]
+        Nothing -> li [getWeatherStyle False] [String.fromInt number ++ ":" ++ "Empty weather" |> text]
+        Just weather -> li [getWeatherStyle True] [ul [] (prettyPrintWeather (weather, number))]
 
-prettyPrintWeather : Weather -> List (Html Msg)
-prettyPrintWeather weather =
+getWeatherStyle : Bool -> Html.Attribute Msg
+getWeatherStyle hasData =
+    (if hasData then "bg-gray-200" else "bg-red-400")
+    ++ " p-4"
+    |> class
+
+prettyPrintWeather : (Weather, Int) -> List (Html Msg)
+prettyPrintWeather (weather, number) =
     [
-        li [] ["Moisture: " ++ String.fromInt weather.moisture |> text],
-        li [] ["Temperature: " ++ String.fromInt weather.temperature |> text],
-        li [] ["Cloudy: " ++ (if weather.cloudy then "True" else "False") |> text]
+        prettyPrintAttribute "Id:" (String.fromInt number),
+        prettyPrintAttribute "Moisture:" (String.fromInt weather.moisture),
+        prettyPrintAttribute "Temperature:" (String.fromInt weather.temperature),
+        prettyPrintAttribute "Cloudy:" (if weather.cloudy then "True" else "False")
     ]
+
+prettyPrintAttribute : String -> String -> Html msg
+prettyPrintAttribute label value =
+    li [class "flex items-center"] [ (div [class "font-bold mr-4"] [label |> text]), (div [][value |> text])]
 
 main : Program Flags Model Msg
 main =

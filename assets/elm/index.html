@@ -7090,36 +7090,49 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
+var elm$html$Html$li = _VirtualDom_node('li');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var author$project$Main$createEntry = function (weatherData) {
+var author$project$Main$prettyPrintWeather = function (_n0) {
+	var weather = _n0.a;
+	var number = _n0.b;
 	return _List_fromArray(
 		[
-			elm$html$Html$text('Pancake')
+			A2(
+			elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					'Id: ' + elm$core$String$fromInt(number))
+				])),
+			A2(
+			elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					'Moisture: ' + elm$core$String$fromInt(weather.moisture))
+				])),
+			A2(
+			elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					'Temperature: ' + elm$core$String$fromInt(weather.temperature))
+				])),
+			A2(
+			elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					'Cloudy: ' + (weather.cloudy ? 'True' : 'False'))
+				]))
 		]);
 };
 var elm$html$Html$ul = _VirtualDom_node('ul');
-var author$project$Main$extractData = function (response) {
-	if (response.$ === 'Nothing') {
-		return elm$html$Html$text('Nothing');
-	} else {
-		var weatherData = response.a;
-		return A2(
-			elm$html$Html$ul,
-			_List_Nil,
-			author$project$Main$createEntry(weatherData));
-	}
-};
-var elm$html$Html$div = _VirtualDom_node('div');
-var author$project$Main$createBody = function (response) {
-	return A2(
-		elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				author$project$Main$extractData(response)
-			]));
-};
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -7128,6 +7141,67 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			elm$json$Json$Encode$string(string));
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var author$project$Main$extractWeather = function (_n0) {
+	var maybeWeather = _n0.a;
+	var number = _n0.b;
+	if (maybeWeather.$ === 'Nothing') {
+		return A2(
+			elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text(
+					elm$core$String$fromInt(number) + (':' + 'Empty weather'))
+				]));
+	} else {
+		var weather = maybeWeather.a;
+		return A2(
+			elm$html$Html$li,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('bg-green-200')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$ul,
+					_List_Nil,
+					author$project$Main$prettyPrintWeather(
+						_Utils_Tuple2(weather, number)))
+				]));
+	}
+};
+var author$project$Main$insertIndex = function (weatherList) {
+	return A2(
+		elm$core$List$map,
+		function (w) {
+			return _Utils_Tuple2(
+				w,
+				elm$core$List$length(weatherList));
+		},
+		weatherList);
+};
+var elm$html$Html$div = _VirtualDom_node('div');
+var author$project$Main$createBody = function (response) {
+	if (response.$ === 'Nothing') {
+		return A2(
+			elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text('Nothing')
+				]));
+	} else {
+		var weatherData = response.a;
+		return A2(
+			elm$html$Html$ul,
+			_List_Nil,
+			A2(
+				elm$core$List$map,
+				author$project$Main$extractWeather,
+				author$project$Main$insertIndex(weatherData)));
+	}
+};
 var author$project$Main$view = function (model) {
 	switch (model.$) {
 		case 'NotAsked':
