@@ -92,16 +92,27 @@ getWeatherStyle hasData =
 
 prettyPrintWeather : (Weather, Int) -> List (Html Msg)
 prettyPrintWeather (weather, number) =
-    [
-        prettyPrintAttribute "Number:" (String.fromInt number),
-        prettyPrintAttribute "Moisture:" (String.fromInt weather.moisture),
-        prettyPrintAttribute "Temperature:" (String.fromInt weather.temperature),
-        prettyPrintAttribute "Cloudy:" (if weather.cloudy then "True" else "False")
-    ]
+    List.map (\header -> header ++ ":") ["Number", "Moisture", "Temperature", "Cloudy"]
+    |> List.map2 combineValueWithHeader [number, weather.moisture, weather.temperature, (if weather.cloudy then 1 else 0)]
+    --|> List.map2 (\value header -> prettyPrintAttribute header (finalize (String.fromInt value))) [number, weather.moisture, weather.temperature, (if weather.cloudy then 1 else 0)]
+    {- [
+        prettyPrintAttribute "Number:" (finalize (String.fromInt number)),
+        prettyPrintAttribute "Moisture:" (finalize (String.fromInt weather.moisture)),
+        prettyPrintAttribute "Temperature:" (finalize (String.fromInt weather.temperature)),
+        prettyPrintAttribute "Cloudy:" (finalize (if weather.cloudy then "True" else "False"))
+    ] -}
 
-prettyPrintAttribute : String -> String -> Html msg
-prettyPrintAttribute label value =
-    li [class "flex items-center"] [ (div [class "font-bold mr-4"] [label |> text]), (div [][value |> text])]
+combineValueWithHeader : Int -> String -> Html Msg
+combineValueWithHeader value header =
+    prettyPrintAttribute header (finalize (String.fromInt value))
+
+finalize : String -> Html Msg
+finalize value =
+    (div [][text value])
+
+prettyPrintAttribute : String -> Html Msg -> Html Msg
+prettyPrintAttribute label valueHtml =
+    li [class "flex items-center"] [ (div [class "font-bold mr-4"] [text label]), valueHtml]
 
 main : Program Flags Model Msg
 main =
