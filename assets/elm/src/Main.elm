@@ -93,7 +93,7 @@ getWeatherStyle hasData =
 prettyPrintWeather : (Weather, Int) -> List (Html Msg)
 prettyPrintWeather (weather, number) =
     [
-        prettyPrintAttribute "Id:" (String.fromInt number),
+        prettyPrintAttribute "Number:" (String.fromInt number),
         prettyPrintAttribute "Moisture:" (String.fromInt weather.moisture),
         prettyPrintAttribute "Temperature:" (String.fromInt weather.temperature),
         prettyPrintAttribute "Cloudy:" (if weather.cloudy then "True" else "False")
