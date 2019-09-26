@@ -8,7 +8,7 @@ import Graphql.Operation exposing (RootQuery)
 import Graphql.Document as Document
 import RemoteData exposing (RemoteData)
 import Api.ScalarCodecs exposing (Id)
-import Html exposing (Html, div, text)
+import Html exposing (Html, div, text, ul, li)
 import Html.Attributes exposing (..)
 
 type Msg =
@@ -62,23 +62,29 @@ view : Model -> Browser.Document Msg
 view model =
     case model of
         RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
-        RemoteData.Loading -> {title = "Elmix", body = [text "Loading"]}
-        RemoteData.Success successResponse -> {title = "Elmix", body = createBody successResponse}
+        RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
+        RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
         RemoteData.Failure message -> {title = "Elmix", body = [text "An error occured while fetching data"]}
 
-createBody : Response -> List (Html Msg)
-createBody response
-    = [div [class "bg-red-400"] [extractData response |> text]]
-
-extractData : Response -> String
-extractData response =
+createBody : Response -> Html Msg
+createBody response =
     case response of
-        Nothing -> "Nothing"
-        Just weatherData -> stringify weatherData
+        Nothing -> div [] [text "Nothing"]
+        Just weatherData -> ul [] (List.map extractWeather weatherData)
 
-stringify : List (Maybe Weather) -> String
-stringify weatherData =
-        "Number of samples are: " ++ String.fromInt (List.length weatherData)
+extractWeather : Maybe Weather -> Html Msg
+extractWeather maybeWeather =
+    case maybeWeather of
+        Nothing -> li [] [text "Empty weather"]
+        Just weather -> li [class "bg-green-500"] [ul [] (prettyPrintWeather weather)]
+
+prettyPrintWeather : Weather -> List (Html Msg)
+prettyPrintWeather weather =
+    [
+        li [] ["Moisture: " ++ String.fromInt weather.moisture |> text],
+        li [] ["Temperature: " ++ String.fromInt weather.temperature |> text],
+        li [] ["Cloudy: " ++ (if weather.cloudy then "True" else "False") |> text]
+    ]
 
 main : Program Flags Model Msg
 main =
