@@ -1,31 +1,21 @@
-import Api.Object
-import Api.Object.WeatherType as WeatherType
+module Main exposing (..)
+
 import Api.Query as Query
-import Browser
-import Graphql.Http
+import Api.Object.WeatherType as WeatherType
+import Api.Object
+
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.Document as Document
+import Graphql.Http
+
+import Browser
+import Html exposing (Html, text, div, ul)
+import Html.Attributes exposing (class)
 import RemoteData exposing (RemoteData)
-import Api.ScalarCodecs exposing (Id)
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (..)
 
-type Msg =
-    GotResponse Model
-
-type alias Response =
-    Maybe (List (Maybe Weather))
-
-type alias Model =
-    RemoteData (Graphql.Http.Error Response) Response
-
-type alias Weather =
-    { moisture : Int
-    , cloudy : Bool
-    , id : Id
-    , temperature : Int
-    }
+import Weather exposing (Weather, Response, Msg (..), Model)
+import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 type alias Flags =
     ()
@@ -61,20 +51,18 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     case model of
-        RemoteData.NotAsked -> {title = "This is my title", body = [text "Not asked"]}
-        RemoteData.Loading -> {title = "This is my title", body = [text "Loading"]}
-        RemoteData.Success successResponse -> {title = "This is my title", body = [div [class "bg-red-400"] [extractData successResponse |> text]]}
-        RemoteData.Failure message -> {title = "This is my title", body = [text "An error occured while fetching data"]}
+        RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
+        RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
+        RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
+        RemoteData.Failure message -> {title = "Elmix", body = [text "An error occured while fetching data"]}
 
-extractData : Response -> String
-extractData response =
+createBody : Response -> Html Msg
+createBody response =
     case response of
-        Nothing -> "Nothing"
-        Just weatherData -> stringify weatherData
-
-stringify : List (Maybe Weather) -> String
-stringify weatherData =
-        "Number of samples are: " ++ String.fromInt (List.length weatherData)
+        Nothing -> div [] [text "Nothing"]
+        Just weatherData -> ul [] (
+            createListNumbers weatherData
+            |> List.map createWeatherLi)
 
 main : Program Flags Model Msg
 main =
