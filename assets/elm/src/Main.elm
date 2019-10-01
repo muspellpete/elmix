@@ -1,31 +1,21 @@
-import Api.Object
-import Api.Object.WeatherType as WeatherType
+module Main exposing (..)
+
 import Api.Query as Query
-import Browser
-import Graphql.Http
+import Api.Object.WeatherType as WeatherType
+import Api.Object
+
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.Document as Document
+import Graphql.Http
+
+import Browser
+import Html exposing (Html, text, div, ul)
+import Html.Attributes exposing (class)
 import RemoteData exposing (RemoteData)
-import Api.ScalarCodecs exposing (Id)
-import Html exposing (Html, div, text, ul, li)
-import Html.Attributes exposing (..)
 
-type Msg =
-    GotResponse Model
-
-type alias Response =
-    Maybe (List (Maybe Weather))
-
-type alias Model =
-    RemoteData (Graphql.Http.Error Response) Response
-
-type alias Weather =
-    { moisture : Int
-    , cloudy : Bool
-    , id : Id
-    , temperature : Int
-    }
+import Weather exposing (Weather, Response, Msg (..), Model)
+import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 type alias Flags =
     ()
@@ -71,48 +61,8 @@ createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]
         Just weatherData -> ul [] (
-            insertIndex weatherData
-            |> List.map extractWeather)
-
-insertIndex : List(Maybe Weather) -> List (Maybe Weather, Int)
-insertIndex weatherList =
-    List.map2 (\w n -> (w, n)) weatherList (List.range 1 (List.length weatherList))
-
-extractWeather : ((Maybe Weather), Int) -> Html Msg
-extractWeather (maybeWeather, number) =
-    case maybeWeather of
-        Nothing -> li [getWeatherStyle False] [String.fromInt number ++ ":" ++ "Empty weather" |> text]
-        Just weather -> li [getWeatherStyle True] [ul [] (prettyPrintWeather (weather, number))]
-
-getWeatherStyle : Bool -> Html.Attribute Msg
-getWeatherStyle hasData =
-    (if hasData then "bg-gray-200" else "bg-red-400")
-    ++ " p-4"
-    |> class
-
-prettyPrintWeather : (Weather, Int) -> List (Html Msg)
-prettyPrintWeather (weather, number) =
-    List.map (\header -> header ++ ":") ["Number", "Moisture", "Temperature", "Cloudy"]
-    |> List.map2 combineValueWithHeader [number, weather.moisture, weather.temperature, (if weather.cloudy then 1 else 0)]
-    --|> List.map2 (\value header -> prettyPrintAttribute header (finalize (String.fromInt value))) [number, weather.moisture, weather.temperature, (if weather.cloudy then 1 else 0)]
-    {- [
-        prettyPrintAttribute "Number:" (finalize (String.fromInt number)),
-        prettyPrintAttribute "Moisture:" (finalize (String.fromInt weather.moisture)),
-        prettyPrintAttribute "Temperature:" (finalize (String.fromInt weather.temperature)),
-        prettyPrintAttribute "Cloudy:" (finalize (if weather.cloudy then "True" else "False"))
-    ] -}
-
-combineValueWithHeader : Int -> String -> Html Msg
-combineValueWithHeader value header =
-    prettyPrintAttribute header (finalize (String.fromInt value))
-
-finalize : String -> Html Msg
-finalize value =
-    (div [][text value])
-
-prettyPrintAttribute : String -> Html Msg -> Html Msg
-prettyPrintAttribute label valueHtml =
-    li [class "flex items-center"] [ (div [class "font-bold mr-4"] [text label]), valueHtml]
+            createListNumbers weatherData
+            |> List.map createWeatherLi)
 
 main : Program Flags Model Msg
 main =
