@@ -7075,9 +7075,75 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$update = F2(
 	function (msg, model) {
-		var response = msg.a;
-		return _Utils_Tuple2(response, elm$core$Platform$Cmd$none);
+		if (msg.$ === 'GotResponse') {
+			var response = msg.a;
+			return _Utils_Tuple2(response, elm$core$Platform$Cmd$none);
+		} else {
+			return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+		}
 	});
+var author$project$Weather$AddWeather = {$: 'AddWeather'};
+var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
+	switch (handler.$) {
+		case 'Normal':
+			return 0;
+		case 'MayStopPropagation':
+			return 1;
+		case 'MayPreventDefault':
+			return 2;
+		default:
+			return 3;
+	}
+};
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var author$project$WeatherCreator$createButton = A2(
+	elm$html$Html$button,
+	_List_fromArray(
+		[
+			elm$html$Html$Attributes$class('bg-blue-200 m-4'),
+			elm$html$Html$Events$onClick(author$project$Weather$AddWeather)
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('mx-2 my-1')
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text('Click me')
+				]))
+		]));
 var author$project$WeatherPage$createListNumbers = function (weatherList) {
 	return A3(
 		elm$core$List$map2,
@@ -7091,34 +7157,11 @@ var author$project$WeatherPage$createListNumbers = function (weatherList) {
 			1,
 			elm$core$List$length(weatherList)));
 };
-var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
-	switch (handler.$) {
-		case 'Normal':
-			return 0;
-		case 'MayStopPropagation':
-			return 1;
-		case 'MayPreventDefault':
-			return 2;
-		default:
-			return 3;
-	}
-};
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var author$project$WeatherPage$getWeatherStyle = function (hasData) {
 	return elm$html$Html$Attributes$class(
 		(hasData ? 'bg-gray-200' : 'bg-red-400') + ' p-4');
 };
-var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$li = _VirtualDom_node('li');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var author$project$WeatherPage$prettyPrintAttribute = F2(
 	function (label, valueHtml) {
 		return A2(
@@ -7226,9 +7269,12 @@ var author$project$Main$createBody = function (response) {
 			elm$html$Html$ul,
 			_List_Nil,
 			A2(
-				elm$core$List$map,
-				author$project$WeatherPage$createWeatherLi,
-				author$project$WeatherPage$createListNumbers(weatherData)));
+				elm$core$List$cons,
+				author$project$WeatherCreator$createButton,
+				A2(
+					elm$core$List$map,
+					author$project$WeatherPage$createWeatherLi,
+					author$project$WeatherPage$createListNumbers(weatherData))));
 	}
 };
 var author$project$Main$view = function (model) {

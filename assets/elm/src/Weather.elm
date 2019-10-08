@@ -13,6 +13,7 @@ type alias Weather =
 
 type Msg =
     GotResponse Model
+    | AddWeather
 
 type alias Response =
     Maybe (List (Maybe Weather))

@@ -10,12 +10,13 @@ import Graphql.Document as Document
 import Graphql.Http
 
 import Browser
+import RemoteData exposing (RemoteData)
 import Html exposing (Html, text, div, ul)
 import Html.Attributes exposing (class)
-import RemoteData exposing (RemoteData)
 
 import Weather exposing (Weather, Response, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
+import WeatherCreator exposing (createButton)
 
 type alias Flags =
     ()
@@ -46,7 +47,9 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         GotResponse response ->
-            ( response, Cmd.none)
+            ( response, Cmd.none )
+        AddWeather ->
+            ( model, Cmd.none )
 
 view : Model -> Browser.Document Msg
 view model =
@@ -60,9 +63,9 @@ createBody : Response -> Html Msg
 createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]
-        Just weatherData -> ul [] (
+        Just weatherData -> ul [] (createButton :: (
             createListNumbers weatherData
-            |> List.map createWeatherLi)
+            |> List.map createWeatherLi))
 
 main : Program Flags Model Msg
 main =
