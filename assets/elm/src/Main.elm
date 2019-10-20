@@ -14,7 +14,7 @@ import RemoteData exposing (RemoteData)
 import Html exposing (Html, text, div, ul)
 import Html.Attributes exposing (class)
 
-import Weather exposing (Weather, Response, Msg (..), Model)
+import Weather exposing (Weather, WeatherList, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 import WeatherCreator exposing (createButton)
 
@@ -29,7 +29,7 @@ samplesInfoSelection =
         (WeatherType.id |> SelectionSet.nonNullOrFail)
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
-query : SelectionSet Response RootQuery
+query : SelectionSet WeatherList RootQuery
 query = 
     Query.samples samplesInfoSelection
 
@@ -37,11 +37,16 @@ makeRequest : Cmd Msg
 makeRequest =
     query
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
+        |> Graphql.Http.send RemoteData.fromResult
+        |> makeRequestFixer
+
+makeRequestFixer :  Cmd (RemoteData (Graphql.Http.Error WeatherList) WeatherList) -> Cmd Msg
+makeRequestFixer commandWithMessage =
+    GotResponse { weatherRemoteData = commandWithMessage, showLabel = False }
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-    (RemoteData.Loading, makeRequest)
+    ({weatherRemoteData = RemoteData.Loading, showLabel = False}, makeRequest)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -53,13 +58,13 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    case model of
+    case model.weatherRemoteData of
         RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
         RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
         RemoteData.Failure message -> {title = "Elmix", body = [text "An error occured while fetching data"]}
 
-createBody : Response -> Html Msg
+createBody : WeatherList -> Html Msg
 createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]

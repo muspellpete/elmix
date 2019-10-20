@@ -15,8 +15,8 @@ type Msg =
     GotResponse Model
     | AddWeather
 
-type alias Response =
+type alias WeatherList =
     Maybe (List (Maybe Weather))
 
 type alias Model =
-    RemoteData (Graphql.Http.Error Response) Response
+    { weatherRemoteData : RemoteData (Graphql.Http.Error WeatherList) WeatherList, showLabel : Bool }
