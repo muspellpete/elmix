@@ -7381,16 +7381,193 @@ var $author$project$Main$update = F2(
 		var response = msg.a;
 		return _Utils_Tuple2(response, $elm$core$Platform$Cmd$none);
 	});
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$WeatherPage$createListNumbers = function (weatherList) {
+	return A3(
+		$elm$core$List$map2,
+		F2(
+			function (w, n) {
+				return _Utils_Tuple2(w, n);
+			}),
+		weatherList,
+		A2(
+			$elm$core$List$range,
+			1,
+			$elm$core$List$length(weatherList)));
+};
+var $author$project$WeatherPage$getWeatherStyle = function (hasData) {
+	return $elm$html$Html$Attributes$class(
+		(hasData ? 'bg-gray-200' : 'bg-red-400') + ' p-4');
+};
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$view = function (model) {
-	return {
-		body: _List_fromArray(
+var $author$project$WeatherPage$prettyPrintAttribute = F2(
+	function (label, valueHtml) {
+		return A2(
+			$elm$html$Html$li,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('font-bold mr-4')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(label)
+						])),
+					valueHtml
+				]));
+	});
+var $author$project$WeatherPage$combineValueWithHeader = F2(
+	function (value, header) {
+		return A2(
+			$author$project$WeatherPage$prettyPrintAttribute,
+			header,
+			A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(value))
+					])));
+	});
+var $author$project$WeatherPage$prettyPrintWeather = function (_v0) {
+	var weather = _v0.a;
+	var number = _v0.b;
+	return A3(
+		$elm$core$List$map2,
+		$author$project$WeatherPage$combineValueWithHeader,
+		_List_fromArray(
 			[
-				$elm$html$Html$text('Add data to database, then uncomment this')
+				number,
+				weather.moisture,
+				weather.temperature,
+				weather.cloudy ? 1 : 0
 			]),
-		title: 'SET UP DATA'
-	};
+		A2(
+			$elm$core$List$map,
+			function (header) {
+				return header + ':';
+			},
+			_List_fromArray(
+				['Number', 'Moisture', 'Temperature', 'Cloudy'])));
+};
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$WeatherPage$createWeatherLi = function (_v0) {
+	var maybeWeather = _v0.a;
+	var number = _v0.b;
+	if (maybeWeather.$ === 'Nothing') {
+		return A2(
+			$elm$html$Html$li,
+			_List_fromArray(
+				[
+					$author$project$WeatherPage$getWeatherStyle(false)
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					$elm$core$String$fromInt(number) + (':' + 'Empty weather'))
+				]));
+	} else {
+		var weather = maybeWeather.a;
+		return A2(
+			$elm$html$Html$li,
+			_List_fromArray(
+				[
+					$author$project$WeatherPage$getWeatherStyle(true)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$ul,
+					_List_Nil,
+					$author$project$WeatherPage$prettyPrintWeather(
+						_Utils_Tuple2(weather, number)))
+				]));
+	}
+};
+var $author$project$Main$createBody = function (response) {
+	if (response.$ === 'Nothing') {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Nothing')
+				]));
+	} else {
+		var weatherData = response.a;
+		return A2(
+			$elm$html$Html$ul,
+			_List_Nil,
+			A2(
+				$elm$core$List$map,
+				$author$project$WeatherPage$createWeatherLi,
+				$author$project$WeatherPage$createListNumbers(weatherData)));
+	}
+};
+var $author$project$Main$view = function (model) {
+	switch (model.$) {
+		case 'NotAsked':
+			return {
+				body: _List_fromArray(
+					[
+						$elm$html$Html$text('Not asked')
+					]),
+				title: 'Elmix'
+			};
+		case 'Loading':
+			return {
+				body: _List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('bg-yellow-500')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Loading')
+							]))
+					]),
+				title: 'Elmix'
+			};
+		case 'Success':
+			var successResponse = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						$author$project$Main$createBody(successResponse)
+					]),
+				title: 'Elmix'
+			};
+		default:
+			var message = model.a;
+			return {
+				body: _List_fromArray(
+					[
+						$elm$html$Html$text('An error occured while fetching data')
+					]),
+				title: 'Elmix'
+			};
+	}
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{
