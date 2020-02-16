@@ -7522,6 +7522,32 @@ var $author$project$Main$createBody = function (response) {
 				$author$project$WeatherPage$createListNumbers(weatherData)));
 	}
 };
+var $author$project$Main$stringifygraphqlError = function (error) {
+	return error.message;
+};
+var $author$project$Main$stringifyError = function (error) {
+	if (error.$ === 'HttpError') {
+		var x = error.a;
+		switch (x.$) {
+			case 'BadUrl':
+				var url = x.a;
+				return 'Bad URL: ' + url;
+			case 'Timeout':
+				return 'Timeout';
+			case 'NetworkError':
+				return 'Network error';
+			case 'BadStatus':
+				var str = x.b;
+				return 'Bad status: ' + str;
+			default:
+				return 'Bad payload';
+		}
+	} else {
+		var graphqlError = error.b;
+		return 'GraphQL Error: ' + $elm$core$String$concat(
+			A2($elm$core$List$map, $author$project$Main$stringifygraphqlError, graphqlError));
+	}
+};
 var $author$project$Main$view = function (model) {
 	switch (model.$) {
 		case 'NotAsked':
@@ -7563,7 +7589,8 @@ var $author$project$Main$view = function (model) {
 			return {
 				body: _List_fromArray(
 					[
-						$elm$html$Html$text('An error occured while fetching data')
+						$elm$html$Html$text(
+						'An error occured while fetching data: ' + $author$project$Main$stringifyError(message))
 					]),
 				title: 'Elmix'
 			};

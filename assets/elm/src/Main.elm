@@ -6,16 +6,18 @@ import Api.Object
 
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Graphql.Operation exposing (RootQuery)
-import Graphql.Document as Document
-import Graphql.Http
+import Graphql.Http exposing (..)
+import Graphql.Http.GraphqlError as GraphqlError
 
 import Browser
 import Html exposing (Html, text, div, ul)
 import Html.Attributes exposing (class)
-import RemoteData exposing (RemoteData)
+import RemoteData
 
 import Weather exposing (Weather, Response, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
+
+import String exposing (concat)
 
 type alias Flags =
     ()
@@ -29,7 +31,7 @@ samplesInfoSelection =
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
 query : SelectionSet Response RootQuery
-query = 
+query =
     Query.samples samplesInfoSelection
 
 makeRequest : Cmd Msg
@@ -55,7 +57,30 @@ view model =
         RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
         RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
         RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
-        RemoteData.Failure message -> {title = "Elmix", body = [text "An error occured while fetching data"]}
+        RemoteData.Failure message -> {title = "Elmix", body = [text ("An error occured while fetching data: " ++ stringifyError message)]}
+
+stringifyError: Graphql.Http.Error Response -> String
+stringifyError error =
+    case error of
+        HttpError x ->
+            case x of
+                BadUrl url ->
+                    "Bad URL: " ++ url
+                Timeout ->
+                    "Timeout"
+                NetworkError ->
+                    "Network error"
+                BadStatus _ str ->
+                    "Bad status: " ++ str
+                BadPayload _ ->
+                    "Bad payload"
+        GraphqlError _ graphqlError ->
+            "GraphQL Error: " ++ concat (List.map stringifygraphqlError graphqlError) 
+
+stringifygraphqlError : GraphqlError.GraphqlError -> String
+stringifygraphqlError error =
+    error.message
+    
 
 createBody : Response -> Html Msg
 createBody response =
