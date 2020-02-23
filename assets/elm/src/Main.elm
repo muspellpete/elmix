@@ -10,9 +10,10 @@ import Graphql.Http exposing (..)
 import Graphql.Http.GraphqlError as GraphqlError
 
 import Browser
-import Html exposing (Html, text, div, ul)
+import Html exposing (Html, text, div, ul, button)
 import Html.Attributes exposing (class)
-import RemoteData
+import Html.Events exposing (onClick)
+import RemoteData exposing (RemoteData)
 
 import Weather exposing (Weather, Response, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
@@ -38,26 +39,32 @@ makeRequest : Cmd Msg
 makeRequest =
     query
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> (x, Weather.ResultPage)) >> GotResponse)
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-    (RemoteData.Loading, makeRequest)
+    ((RemoteData.Loading, Weather.ResultPage), makeRequest)
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+update msg (remoteData, _) =
     case msg of
         GotResponse response ->
-            ( response, Cmd.none)
+            ( response , Cmd.none)
+        Weather.ExtraButton -> 
+            ( (remoteData, Weather.ExtraPage), Cmd.none )
 
 view : Model -> Browser.Document Msg
-view model =
+view (remoteData, page) =
 --    {title = "SET UP DATA", body = [text "Add data to database, then uncomment this"]}
-    case model of
-        RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
-        RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
-        RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
-        RemoteData.Failure message -> {title = "Elmix", body = [text ("An error occured while fetching data: " ++ stringifyError message)]}
+    case page of
+        Weather.ResultPage ->
+                        case remoteData of
+                RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
+                RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
+                RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
+                RemoteData.Failure message -> {title = "Elmix", body = [text ("An error occured while fetching data: " ++ stringifyError message)]}
+        Weather.ExtraPage ->
+            {title = "Elmix", body = [text "Extra Button page"]}
 
 stringifyError: Graphql.Http.Error Response -> String
 stringifyError error =
@@ -87,8 +94,9 @@ createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]
         Just weatherData -> ul [] (
-            createListNumbers weatherData
-            |> List.map createWeatherLi)
+            button [onClick Weather.ExtraButton, class "bg-green-400 m-4 pl-2 pr-2"] [text "Extra page"] :: (
+                createListNumbers weatherData
+                |> List.map createWeatherLi))
 
 main : Program Flags Model Msg
 main =

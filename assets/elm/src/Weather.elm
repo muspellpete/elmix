@@ -11,11 +11,18 @@ type alias Weather =
     , temperature : Int
     }
 
-type Msg =
-    GotResponse Model
+type Msg 
+    = GotResponse Model
+    | ExtraButton
+
+type Page
+    = ResultPage
+    | ExtraPage
 
 type alias Response =
     Maybe (List (Maybe Weather))
 
 type alias Model =
-    RemoteData (Graphql.Http.Error Response) Response
+    ( RemoteData (Graphql.Http.Error Response) Response
+    , Page
+    )
