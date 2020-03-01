@@ -18,6 +18,7 @@ import RemoteData exposing (RemoteData)
 import Weather exposing (Weather, Response, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 import ExtraPageContent exposing (pageContent)
+import AddWeatherPageContent exposing (pageContent)
 
 import String exposing (concat)
 
@@ -49,23 +50,29 @@ init _ =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg (remoteData, _) =
     case msg of
+        RefreshData -> 
+            ( (remoteData, Weather.ResultPage), makeRequest)
         GotResponse response ->
             ( response , Cmd.none)
         Weather.ExtraButton -> 
             ( (remoteData, Weather.ExtraPage), Cmd.none )
+        Weather.AddWeatherButton ->
+            ( (remoteData, Weather.AddWeatherPage), Cmd.none )
 
 view : Model -> Browser.Document Msg
 view (remoteData, page) =
 --    {title = "SET UP DATA", body = [text "Add data to database, then uncomment this"]}
     case page of
         Weather.ResultPage ->
-                        case remoteData of
+            case remoteData of
                 RemoteData.NotAsked -> {title = "Elmix", body = [text "Not asked"]}
                 RemoteData.Loading -> {title = "Elmix", body = [div [class "bg-yellow-500"][text "Loading"]]}
                 RemoteData.Success successResponse -> {title = "Elmix", body = [createBody successResponse]}
                 RemoteData.Failure message -> {title = "Elmix", body = [text ("An error occured while fetching data: " ++ stringifyError message)]}
         Weather.ExtraPage ->
-            {title = "Elmix", body = [text "Extra Button page"]}
+            ExtraPageContent.pageContent (remoteData, page) -- call with both elements which make up the Model
+        Weather.AddWeatherPage ->
+            AddWeatherPageContent.pageContent (remoteData, page)
 
 stringifyError: Graphql.Http.Error Response -> String
 stringifyError error =
@@ -95,9 +102,9 @@ createBody response =
     case response of
         Nothing -> div [] [text "Nothing"]
         Just weatherData -> ul [] (
-            button [onClick Weather.ExtraButton, class "bg-green-400 m-4 pl-2 pr-2"] [text "Extra page"] :: (
-                createListNumbers weatherData
-                |> List.map createWeatherLi))
+            button [onClick Weather.AddWeatherButton, class "bg-green-400 m-4 pl-2 pr-2"] [text "Add weather"] :: 
+            button [onClick Weather.ExtraButton, class "bg-orange-400 m-4 pl-2 pr-2"] [text "Extra page"] :: 
+            (createListNumbers weatherData |> List.map createWeatherLi))
 
 main : Program Flags Model Msg
 main =

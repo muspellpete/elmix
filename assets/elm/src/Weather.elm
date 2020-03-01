@@ -13,11 +13,14 @@ type alias Weather =
 
 type Msg 
     = GotResponse Model
+    | RefreshData
     | ExtraButton
+    | AddWeatherButton
 
 type Page
     = ResultPage
     | ExtraPage
+    | AddWeatherPage
 
 type alias Response =
     Maybe (List (Maybe Weather))
