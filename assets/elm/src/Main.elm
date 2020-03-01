@@ -17,6 +17,7 @@ import RemoteData exposing (RemoteData)
 
 import Weather exposing (Weather, Response, Msg (..), Model)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
+import ExtraPageContent exposing (pageContent)
 
 import String exposing (concat)
 
