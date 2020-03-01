@@ -16,6 +16,7 @@ type Msg
     | RefreshData
     | ExtraButton
     | AddWeatherButton
+    | UpdateText String
 
 type Page
     = ResultPage
@@ -26,6 +27,7 @@ type alias Response =
     Maybe (List (Maybe Weather))
 
 type alias Model =
-    ( RemoteData (Graphql.Http.Error Response) Response
-    , Page
-    )
+    { data: RemoteData (Graphql.Http.Error Response) Response
+    , page: Page
+    , inputText: String -- for input field on UpdateText
+    }

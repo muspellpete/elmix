@@ -7374,13 +7374,13 @@ var $author$project$Main$makeRequest = A2(
 		A2(
 			$elm$core$Basics$composeR,
 			function (x) {
-				return _Utils_Tuple2(x, $author$project$Weather$ResultPage);
+				return {data: x, inputText: '', page: $author$project$Weather$ResultPage};
 			},
 			$author$project$Weather$GotResponse)),
 	A2($dillonkearns$elm_graphql$Graphql$Http$queryRequest, '/api/graphql', $author$project$Main$query));
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		_Utils_Tuple2($krisajenkins$remotedata$RemoteData$Loading, $author$project$Weather$ResultPage),
+		{data: $krisajenkins$remotedata$RemoteData$Loading, inputText: '', page: $author$project$Weather$ResultPage},
 		$author$project$Main$makeRequest);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -7390,23 +7390,37 @@ var $author$project$Weather$ExtraPage = {$: 'ExtraPage'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$update = F2(
-	function (msg, _v0) {
-		var remoteData = _v0.a;
+	function (msg, model) {
 		switch (msg.$) {
 			case 'RefreshData':
 				return _Utils_Tuple2(
-					_Utils_Tuple2(remoteData, $author$project$Weather$ResultPage),
+					_Utils_update(
+						model,
+						{page: $author$project$Weather$ResultPage}),
 					$author$project$Main$makeRequest);
 			case 'GotResponse':
 				var response = msg.a;
 				return _Utils_Tuple2(response, $elm$core$Platform$Cmd$none);
 			case 'ExtraButton':
 				return _Utils_Tuple2(
-					_Utils_Tuple2(remoteData, $author$project$Weather$ExtraPage),
+					_Utils_update(
+						model,
+						{page: $author$project$Weather$ExtraPage}),
+					$elm$core$Platform$Cmd$none);
+			case 'AddWeatherButton':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{page: $author$project$Weather$AddWeatherPage}),
 					$elm$core$Platform$Cmd$none);
 			default:
+				var newText = msg.a;
 				return _Utils_Tuple2(
-					_Utils_Tuple2(remoteData, $author$project$Weather$AddWeatherPage),
+					_Utils_update(
+						model,
+						{
+							inputText: _Utils_ap(model.inputText, newText)
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -7418,6 +7432,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$Weather$AddWeatherButton = {$: 'AddWeatherButton'};
 var $author$project$Weather$ExtraButton = {$: 'ExtraButton'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$WeatherPage$createListNumbers = function (weatherList) {
@@ -7570,7 +7585,7 @@ var $author$project$Main$createBody = function (response) {
 					$elm$html$Html$button,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onClick($author$project$Weather$ExtraButton),
+							$elm$html$Html$Events$onClick($author$project$Weather$AddWeatherButton),
 							$elm$html$Html$Attributes$class('bg-green-400 m-4 pl-2 pr-2')
 						]),
 					_List_fromArray(
@@ -7596,12 +7611,80 @@ var $author$project$Main$createBody = function (response) {
 						$author$project$WeatherPage$createListNumbers(weatherData)))));
 	}
 };
+var $author$project$Weather$UpdateText = function (a) {
+	return {$: 'UpdateText', a: a};
+};
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$AddWeatherPageContent$bodyContent = function (model) {
+	return _List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Add Weather page')
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$input,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$placeholder('Some placeholder'),
+							$elm$html$Html$Attributes$value(model.inputText),
+							$elm$html$Html$Events$onInput($author$project$Weather$UpdateText)
+						]),
+					_List_Nil)
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('A: ' + model.inputText)
+				]))
+		]);
+};
 var $author$project$AddWeatherPageContent$pageContent = function (model) {
 	return {
-		body: _List_fromArray(
-			[
-				$elm$html$Html$text('Add weather page')
-			]),
+		body: $author$project$AddWeatherPageContent$bodyContent(model),
 		title: 'Elmix'
 	};
 };
@@ -7664,12 +7747,12 @@ var $author$project$Main$stringifyError = function (error) {
 			A2($elm$core$List$map, $author$project$Main$stringifygraphqlError, graphqlError));
 	}
 };
-var $author$project$Main$view = function (_v0) {
-	var remoteData = _v0.a;
-	var page = _v0.b;
-	switch (page.$) {
+var $author$project$Main$view = function (model) {
+	var _v0 = model.page;
+	switch (_v0.$) {
 		case 'ResultPage':
-			switch (remoteData.$) {
+			var _v1 = model.data;
+			switch (_v1.$) {
 				case 'NotAsked':
 					return {
 						body: _List_fromArray(
@@ -7696,7 +7779,7 @@ var $author$project$Main$view = function (_v0) {
 						title: 'Elmix'
 					};
 				case 'Success':
-					var successResponse = remoteData.a;
+					var successResponse = _v1.a;
 					return {
 						body: _List_fromArray(
 							[
@@ -7705,7 +7788,7 @@ var $author$project$Main$view = function (_v0) {
 						title: 'Elmix'
 					};
 				default:
-					var message = remoteData.a;
+					var message = _v1.a;
 					return {
 						body: _List_fromArray(
 							[
@@ -7716,11 +7799,9 @@ var $author$project$Main$view = function (_v0) {
 					};
 			}
 		case 'ExtraPage':
-			return $author$project$ExtraPageContent$pageContent(
-				_Utils_Tuple2(remoteData, page));
+			return $author$project$ExtraPageContent$pageContent(model);
 		default:
-			return $author$project$AddWeatherPageContent$pageContent(
-				_Utils_Tuple2(remoteData, page));
+			return $author$project$AddWeatherPageContent$pageContent(model);
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
