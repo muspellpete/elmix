@@ -7374,19 +7374,33 @@ var $author$project$Main$makeRequest = A2(
 		A2(
 			$elm$core$Basics$composeR,
 			function (x) {
-				return {data: x, inputText: '', page: $author$project$Weather$ResultPage};
+				return {data: x, inputCloudy: false, inputMoisture: 0, inputTemperature: 0, page: $author$project$Weather$ResultPage};
 			},
 			$author$project$Weather$GotResponse)),
 	A2($dillonkearns$elm_graphql$Graphql$Http$queryRequest, '/api/graphql', $author$project$Main$query));
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{data: $krisajenkins$remotedata$RemoteData$Loading, inputText: '', page: $author$project$Weather$ResultPage},
+		{data: $krisajenkins$remotedata$RemoteData$Loading, inputCloudy: false, inputMoisture: 0, inputTemperature: 0, page: $author$project$Weather$ResultPage},
 		$author$project$Main$makeRequest);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Weather$AddWeatherPage = {$: 'AddWeatherPage'};
 var $author$project$Weather$ExtraPage = {$: 'ExtraPage'};
+var $author$project$Main$getValidWeatherBool = F2(
+	function (newString, oldBool) {
+		return oldBool;
+	});
+var $author$project$Main$getValidWeatherNumber = F2(
+	function (newString, oldNumber) {
+		var _v0 = $elm$core$String$toInt(newString);
+		if (_v0.$ === 'Just') {
+			var value = _v0.a;
+			return value;
+		} else {
+			return oldNumber;
+		}
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$update = F2(
@@ -7413,13 +7427,31 @@ var $author$project$Main$update = F2(
 						model,
 						{page: $author$project$Weather$AddWeatherPage}),
 					$elm$core$Platform$Cmd$none);
-			default:
-				var newText = msg.a;
+			case 'UpdateTextMoisture':
+				var newMoisture = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							inputText: _Utils_ap(model.inputText, newText)
+							inputMoisture: A2($author$project$Main$getValidWeatherNumber, newMoisture, model.inputMoisture)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'UpdateTextCloudy':
+				var newCloudy = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							inputCloudy: A2($author$project$Main$getValidWeatherBool, newCloudy, model.inputCloudy)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var newTemperature = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							inputTemperature: A2($author$project$Main$getValidWeatherNumber, newTemperature, model.inputTemperature)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -7611,8 +7643,14 @@ var $author$project$Main$createBody = function (response) {
 						$author$project$WeatherPage$createListNumbers(weatherData)))));
 	}
 };
-var $author$project$Weather$UpdateText = function (a) {
-	return {$: 'UpdateText', a: a};
+var $author$project$Weather$UpdateTextCloudy = function (a) {
+	return {$: 'UpdateTextCloudy', a: a};
+};
+var $author$project$Weather$UpdateTextMoisture = function (a) {
+	return {$: 'UpdateTextMoisture', a: a};
+};
+var $author$project$Weather$UpdateTextTemperature = function (a) {
+	return {$: 'UpdateTextTemperature', a: a};
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Events$alwaysStop = function (x) {
@@ -7653,23 +7691,29 @@ var $author$project$AddWeatherPageContent$bodyContent = function (model) {
 		[
 			A2(
 			$elm$html$Html$div,
-			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$text('Add Weather page')
+					$elm$html$Html$Attributes$class('mb-4 font-bold')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Add weather')
 				])),
 			A2(
 			$elm$html$Html$div,
 			_List_Nil,
 			_List_fromArray(
 				[
+					$elm$html$Html$text('Moisture:'),
 					A2(
 					$elm$html$Html$input,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$placeholder('Some placeholder'),
-							$elm$html$Html$Attributes$value(model.inputText),
-							$elm$html$Html$Events$onInput($author$project$Weather$UpdateText)
+							$elm$html$Html$Attributes$placeholder('Number'),
+							$elm$html$Html$Attributes$value(
+							$elm$core$String$fromInt(model.inputMoisture)),
+							$elm$html$Html$Events$onInput($author$project$Weather$UpdateTextMoisture),
+							$elm$html$Html$Attributes$class('ml-2 border-2 border-gray-600')
 						]),
 					_List_Nil)
 				])),
@@ -7678,7 +7722,36 @@ var $author$project$AddWeatherPageContent$bodyContent = function (model) {
 			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$text('A: ' + model.inputText)
+					$elm$html$Html$text('Cloudy:'),
+					A2(
+					$elm$html$Html$input,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$placeholder('Boolean'),
+							$elm$html$Html$Attributes$value(
+							model.inputCloudy ? 'true' : 'false'),
+							$elm$html$Html$Events$onInput($author$project$Weather$UpdateTextCloudy),
+							$elm$html$Html$Attributes$class('ml-2 border-2 border-gray-600')
+						]),
+					_List_Nil)
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Temperature:'),
+					A2(
+					$elm$html$Html$input,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$placeholder('Number'),
+							$elm$html$Html$Attributes$value(
+							$elm$core$String$fromInt(model.inputTemperature)),
+							$elm$html$Html$Events$onInput($author$project$Weather$UpdateTextTemperature),
+							$elm$html$Html$Attributes$class('ml-2 border-2 border-gray-600')
+						]),
+					_List_Nil)
 				]))
 		]);
 };

@@ -41,11 +41,11 @@ makeRequest : Cmd Msg
 makeRequest =
     query
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> {data = x, page = Weather.ResultPage, inputText = ""}) >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> {data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0}) >> GotResponse)
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-    ({ data = RemoteData.Loading, page = Weather.ResultPage, inputText = "" }, makeRequest)
+    ({ data = RemoteData.Loading, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0 }, makeRequest)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -58,8 +58,23 @@ update msg model =
             ( { model | page = Weather.ExtraPage }, Cmd.none )
         Weather.AddWeatherButton ->
             ( { model | page = Weather.AddWeatherPage }, Cmd.none )
-        UpdateText newText -> -- Add the input to the input string in the model
-            ( { model | inputText = newText }, Cmd.none)
+        UpdateTextMoisture newMoisture -> -- Add the input to the input string in the model
+            ( { model | inputMoisture = (getValidWeatherNumber newMoisture model.inputMoisture) }, Cmd.none)
+        UpdateTextCloudy newCloudy ->
+            ( { model | inputCloudy = (getValidWeatherBool newCloudy model.inputCloudy) }, Cmd.none)
+        UpdateTextTemperature newTemperature ->
+            ( { model | inputTemperature = (getValidWeatherNumber newTemperature model.inputTemperature) }, Cmd.none)
+
+getValidWeatherNumber : String -> Int -> Int
+getValidWeatherNumber newString oldNumber =
+    if newString == "" then 0 else
+        case String.toInt newString of
+            Just value -> value
+            Nothing -> oldNumber
+
+getValidWeatherBool : String -> Bool -> Bool
+getValidWeatherBool newString oldBool =
+    if newString == "0" then False else True
 
 view : Model -> Browser.Document Msg
 view model =
