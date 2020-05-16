@@ -1888,19 +1888,19 @@ function _Platform_initialize(flagDecoder, args, init, update, subscriptions, st
 	var result = A2(_Json_run, flagDecoder, _Json_wrap(args ? args['flags'] : undefined));
 	$elm$core$Result$isOk(result) || _Debug_crash(2 /**/, _Json_errorToString(result.a) /**/);
 	var managers = {};
-	result = init(result.a);
-	var model = result.a;
+	var initPair = init(result.a);
+	var model = initPair.a;
 	var stepper = stepperBuilder(sendToApp, model);
 	var ports = _Platform_setupEffects(managers, sendToApp);
 
 	function sendToApp(msg, viewMetadata)
 	{
-		result = A2(update, msg, model);
-		stepper(model = result.a, viewMetadata);
-		_Platform_enqueueEffects(managers, result.b, subscriptions(model));
+		var pair = A2(update, msg, model);
+		stepper(model = pair.a, viewMetadata);
+		_Platform_enqueueEffects(managers, pair.b, subscriptions(model));
 	}
 
-	_Platform_enqueueEffects(managers, result.b, subscriptions(model));
+	_Platform_enqueueEffects(managers, initPair.b, subscriptions(model));
 
 	return ports ? { ports: ports } : {};
 }
@@ -7387,18 +7387,23 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Weather$AddWeatherPage = {$: 'AddWeatherPage'};
 var $author$project$Weather$ExtraPage = {$: 'ExtraPage'};
+var $author$project$Weather$PlaygroundPage = {$: 'PlaygroundPage'};
 var $author$project$Main$getValidWeatherBool = F2(
 	function (newString, oldBool) {
-		return oldBool;
+		return (newString === '0') ? false : true;
 	});
 var $author$project$Main$getValidWeatherNumber = F2(
 	function (newString, oldNumber) {
-		var _v0 = $elm$core$String$toInt(newString);
-		if (_v0.$ === 'Just') {
-			var value = _v0.a;
-			return value;
+		if (newString === '') {
+			return 0;
 		} else {
-			return oldNumber;
+			var _v0 = $elm$core$String$toInt(newString);
+			if (_v0.$ === 'Just') {
+				var value = _v0.a;
+				return value;
+			} else {
+				return oldNumber;
+			}
 		}
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -7426,6 +7431,12 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{page: $author$project$Weather$AddWeatherPage}),
+					$elm$core$Platform$Cmd$none);
+			case 'PlaygroundButton':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{page: $author$project$Weather$PlaygroundPage}),
 					$elm$core$Platform$Cmd$none);
 			case 'UpdateTextMoisture':
 				var newMoisture = msg.a;
@@ -7466,6 +7477,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $author$project$Weather$AddWeatherButton = {$: 'AddWeatherButton'};
 var $author$project$Weather$ExtraButton = {$: 'ExtraButton'};
+var $author$project$Weather$PlaygroundButton = {$: 'PlaygroundButton'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$WeatherPage$createListNumbers = function (weatherList) {
 	return A3(
@@ -7638,11 +7650,25 @@ var $author$project$Main$createBody = function (response) {
 								$elm$html$Html$text('Extra page')
 							])),
 					A2(
-						$elm$core$List$map,
-						$author$project$WeatherPage$createWeatherLi,
-						$author$project$WeatherPage$createListNumbers(weatherData)))));
+						$elm$core$List$cons,
+						A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Weather$PlaygroundButton),
+									$elm$html$Html$Attributes$class('bg-orange-400 m-4 pl-2 pr-2')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Playground page')
+								])),
+						A2(
+							$elm$core$List$map,
+							$author$project$WeatherPage$createWeatherLi,
+							$author$project$WeatherPage$createListNumbers(weatherData))))));
 	}
 };
+var $author$project$Weather$RefreshData = {$: 'RefreshData'};
 var $author$project$Weather$UpdateTextCloudy = function (a) {
 	return {$: 'UpdateTextCloudy', a: a};
 };
@@ -7752,6 +7778,40 @@ var $author$project$AddWeatherPageContent$bodyContent = function (model) {
 							$elm$html$Html$Attributes$class('ml-2 border-2 border-gray-600')
 						]),
 					_List_Nil)
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Weather$RefreshData),
+							$elm$html$Html$Attributes$class('bg-blue-400 my-2')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Back')
+						]))
+				])),
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick($author$project$Weather$RefreshData),
+							$elm$html$Html$Attributes$class('bg-blue-400 my-2')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Add weather')
+						]))
 				]))
 		]);
 };
@@ -7761,8 +7821,39 @@ var $author$project$AddWeatherPageContent$pageContent = function (model) {
 		title: 'Elmix'
 	};
 };
-var $author$project$Weather$RefreshData = {$: 'RefreshData'};
 var $author$project$ExtraPageContent$pageContent = function (model) {
+	return {
+		body: _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Weather$RefreshData),
+								$elm$html$Html$Attributes$class('bg-blue-400 m-b10')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Back')
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Extra Button page')
+					]))
+			]),
+		title: 'Elmix'
+	};
+};
+var $author$project$PlaygroundPageContent$pageContent = function (model) {
 	return {
 		body: _List_fromArray(
 			[
@@ -7873,8 +7964,10 @@ var $author$project$Main$view = function (model) {
 			}
 		case 'ExtraPage':
 			return $author$project$ExtraPageContent$pageContent(model);
-		default:
+		case 'AddWeatherPage':
 			return $author$project$AddWeatherPageContent$pageContent(model);
+		default:
+			return $author$project$PlaygroundPageContent$pageContent(model);
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$document(

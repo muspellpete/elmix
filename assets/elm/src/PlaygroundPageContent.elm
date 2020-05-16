@@ -1,9 +1,9 @@
-module ExtraPageContent exposing (pageContent)
+module PlaygroundPageContent exposing (pageContent)
 
 import Browser
-import Html exposing (button, div, text)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Html exposing (Html, button, div, input, text)
+import Html.Attributes exposing (class, placeholder, value)
+import Html.Events exposing (onClick, onInput)
 import Weather exposing (Model, Msg(..))
 
 
@@ -12,6 +12,6 @@ pageContent model =
     { title = "Elmix"
     , body =
         [ div [] [ button [ onClick Weather.RefreshData, class "bg-blue-400 m-b10" ] [ text "Back" ] ]
-        , div [] [ text "Extra Button page" ]
+        , div [] [ text "Playground page" ]
         ]
     }
