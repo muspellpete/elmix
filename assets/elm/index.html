@@ -5489,7 +5489,37 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $krisajenkins$remotedata$RemoteData$Loading = {$: 'Loading'};
+var $author$project$Weather$PlaygroundPage = {$: 'PlaygroundPage'};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$init = function (_v0) {
+	return _Utils_Tuple2(
+		{data: $krisajenkins$remotedata$RemoteData$Loading, inputCloudy: false, inputMoisture: 0, inputTemperature: 0, page: $author$project$Weather$PlaygroundPage},
+		$elm$core$Platform$Cmd$none);
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Weather$AddWeatherPage = {$: 'AddWeatherPage'};
+var $author$project$Weather$ExtraPage = {$: 'ExtraPage'};
 var $author$project$Weather$ResultPage = {$: 'ResultPage'};
+var $author$project$Main$getValidWeatherBool = F2(
+	function (newString, oldBool) {
+		return (newString === '0') ? false : true;
+	});
+var $author$project$Main$getValidWeatherNumber = F2(
+	function (newString, oldNumber) {
+		if (newString === '') {
+			return 0;
+		} else {
+			var _v0 = $elm$core$String$toInt(newString);
+			if (_v0.$ === 'Just') {
+				var value = _v0.a;
+				return value;
+			} else {
+				return oldNumber;
+			}
+		}
+	});
 var $author$project$Weather$GotResponse = function (a) {
 	return {$: 'GotResponse', a: a};
 };
@@ -7378,36 +7408,6 @@ var $author$project$Main$makeRequest = A2(
 			},
 			$author$project$Weather$GotResponse)),
 	A2($dillonkearns$elm_graphql$Graphql$Http$queryRequest, '/api/graphql', $author$project$Main$query));
-var $author$project$Main$init = function (_v0) {
-	return _Utils_Tuple2(
-		{data: $krisajenkins$remotedata$RemoteData$Loading, inputCloudy: false, inputMoisture: 0, inputTemperature: 0, page: $author$project$Weather$ResultPage},
-		$author$project$Main$makeRequest);
-};
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Weather$AddWeatherPage = {$: 'AddWeatherPage'};
-var $author$project$Weather$ExtraPage = {$: 'ExtraPage'};
-var $author$project$Weather$PlaygroundPage = {$: 'PlaygroundPage'};
-var $author$project$Main$getValidWeatherBool = F2(
-	function (newString, oldBool) {
-		return (newString === '0') ? false : true;
-	});
-var $author$project$Main$getValidWeatherNumber = F2(
-	function (newString, oldNumber) {
-		if (newString === '') {
-			return 0;
-		} else {
-			var _v0 = $elm$core$String$toInt(newString);
-			if (_v0.$ === 'Just') {
-				var value = _v0.a;
-				return value;
-			} else {
-				return oldNumber;
-			}
-		}
-	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -7853,13 +7853,19 @@ var $author$project$ExtraPageContent$pageContent = function (model) {
 		title: 'Elmix'
 	};
 };
-var $author$project$PlaygroundPageContent$pageContent = function (model) {
+var $author$project$PlaygroundPageContent$createTable = function (strings) {
+	return A2($elm$html$Html$div, _List_Nil, _List_Nil);
+};
+var $author$project$PlaygroundPageContent$pageContent = function (_v0) {
 	return {
 		body: _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-green-200')
+					]),
 				_List_fromArray(
 					[
 						A2(
@@ -7876,13 +7882,35 @@ var $author$project$PlaygroundPageContent$pageContent = function (model) {
 					])),
 				A2(
 				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('my-10')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Playground page')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-yellow-200 my-10 text-orange-900 text-center p-4 w-20 rounded-full')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Cake')
+					])),
+				A2(
+				$elm$html$Html$div,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Extra Button page')
+						$author$project$PlaygroundPageContent$createTable(
+						_List_fromArray(
+							['what', 'is', 'this']))
 					]))
 			]),
-		title: 'Elmix'
+		title: 'Elmix - Playground page'
 	};
 };
 var $author$project$Main$stringifygraphqlError = function (error) {

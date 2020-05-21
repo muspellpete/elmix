@@ -5,6 +5,7 @@ import Api.Object
 import Api.Object.WeatherType as WeatherType
 import Api.Query as Query
 import Browser
+import DvorakPracticePageContent exposing (pageContent)
 import ExtraPageContent exposing (pageContent)
 import Graphql.Http exposing (..)
 import Graphql.Http.GraphqlError as GraphqlError
@@ -14,9 +15,10 @@ import Html exposing (Html, button, div, text, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import PlaygroundPageContent exposing (pageContent)
+import Random exposing (Generator)
 import RemoteData exposing (RemoteData)
 import String exposing (concat)
-import Weather exposing (Model, Msg(..), Response, Weather)
+import Weather exposing (..)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 
@@ -42,12 +44,12 @@ makeRequest : Cmd Msg
 makeRequest =
     query
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> { data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0 }) >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> { data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomRow = Home, randomModifier = Still, randomHand = Left }) >> GotResponse)
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { data = RemoteData.Loading, page = Weather.PlaygroundPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0 }, Cmd.none )
+    ( { data = RemoteData.Loading, page = Weather.DvorakPracticePage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomRow = Home, randomModifier = Still, randomHand = Left }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -77,6 +79,20 @@ update msg model =
 
         UpdateTextTemperature newTemperature ->
             ( { model | inputTemperature = getValidWeatherNumber newTemperature model.inputTemperature }, Cmd.none )
+
+        PracticeDvorak ->
+            ( { model | page = Weather.DvorakPracticePage }, Random.generate LessonProvider getRandomRow )
+
+        LessonProvider row ->
+            ( { model | randomRow = row }, Cmd.none )
+
+        GenerateNewLesson ->
+            ( model, Random.generate LessonProvider getRandomRow )
+
+
+getRandomRow : Generator Row
+getRandomRow =
+    Random.uniform Thumb [ Top ]
 
 
 getValidWeatherNumber : String -> Int -> Int
@@ -129,6 +145,9 @@ view model =
 
         Weather.PlaygroundPage ->
             PlaygroundPageContent.pageContent model
+
+        Weather.DvorakPracticePage ->
+            DvorakPracticePageContent.pageContent model
 
 
 stringifyError : Graphql.Http.Error Response -> String

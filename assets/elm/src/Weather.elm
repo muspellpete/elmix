@@ -19,9 +19,12 @@ type Msg
     | ExtraButton
     | AddWeatherButton
     | PlaygroundButton
+    | PracticeDvorak
     | UpdateTextMoisture String
     | UpdateTextCloudy String
     | UpdateTextTemperature String
+    | LessonProvider Row
+    | GenerateNewLesson
 
 
 type Page
@@ -29,6 +32,35 @@ type Page
     | ExtraPage
     | AddWeatherPage
     | PlaygroundPage
+    | DvorakPracticePage
+
+
+type Modifier
+    = Still
+    | Inwards
+
+
+type Finger
+    = Index Modifier
+    | Middle
+    | Ring
+    | Little
+
+
+type Row
+    = Home
+    | Top
+    | Bottom
+    | Thumb
+
+
+type Hand
+    = Left
+    | Right
+
+
+type Gesture
+    = Ges Hand Row Finger
 
 
 type alias Response =
@@ -41,4 +73,8 @@ type alias Model =
     , inputMoisture : Int -- for input field on UpdateText
     , inputCloudy : Bool
     , inputTemperature : Int
+    , randomFinger : Finger
+    , randomRow : Row
+    , randomModifier : Modifier
+    , randomHand : Hand
     }
