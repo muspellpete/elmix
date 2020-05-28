@@ -4,7 +4,6 @@ import Browser
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Random exposing (Generator)
 import Weather exposing (..)
 
 
@@ -16,7 +15,7 @@ pageContent model =
 body : Model -> Html Msg
 body model =
     div []
-        [ div [] [ text (getKeyForGesture (Ges Left model.randomRow (Index Still))) ]
+        [ div [] [ text (getKeyForGesture model.randomGesture) ]
         , div [] [ button [ onClick GenerateNewLesson, class "bg-blue-400" ] [ text "Generate new key" ] ]
         ]
 
@@ -91,9 +90,6 @@ getKeyForLeftHand row finger =
                 Little ->
                     ";"
 
-        Thumb ->
-            "space"
-
 
 getKeyForRightHand : Row -> Finger -> String
 getKeyForRightHand row finger =
@@ -154,6 +150,3 @@ getKeyForRightHand row finger =
 
                 Little ->
                     "z"
-
-        Thumb ->
-            "space"

@@ -9,7 +9,6 @@ import DvorakPracticePageContent exposing (pageContent)
 import ExtraPageContent exposing (pageContent)
 import Graphql.Http exposing (..)
 import Graphql.Http.GraphqlError as GraphqlError
-import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (Html, button, div, text, ul)
 import Html.Attributes exposing (class)
@@ -35,21 +34,25 @@ samplesInfoSelection =
         (WeatherType.temperature |> SelectionSet.nonNullOrFail)
 
 
-query : SelectionSet Response RootQuery
-query =
-    Query.samples samplesInfoSelection
-
-
 makeRequest : Cmd Msg
 makeRequest =
-    query
+    Query.samples samplesInfoSelection
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> { data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomRow = Home, randomModifier = Still, randomHand = Left }) >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> { data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }) >> GotResponse)
+
+
+
+-- All the crazy redirects should not be necessary, also the anonymous function should just be defined properly for readability
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { data = RemoteData.Loading, page = Weather.DvorakPracticePage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomRow = Home, randomModifier = Still, randomHand = Left }, Cmd.none )
+    ( getDefaultModel, Cmd.none )
+
+
+getDefaultModel : Model
+getDefaultModel =
+    { data = RemoteData.Loading, page = Weather.DvorakPracticePage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -58,6 +61,7 @@ update msg model =
         RefreshData ->
             ( { model | page = Weather.ResultPage }, makeRequest )
 
+        -- GotResponse currently makes the whole model, which is not necessary, it should just send in the actual changes to the model, which is then applied here
         GotResponse response ->
             ( response, Cmd.none )
 
@@ -81,18 +85,28 @@ update msg model =
             ( { model | inputTemperature = getValidWeatherNumber newTemperature model.inputTemperature }, Cmd.none )
 
         PracticeDvorak ->
-            ( { model | page = Weather.DvorakPracticePage }, Random.generate LessonProvider getRandomRow )
+            ( { model | page = Weather.DvorakPracticePage }, Random.generate LessonProvider getRandomGesture )
 
-        LessonProvider row ->
-            ( { model | randomRow = row }, Cmd.none )
+        LessonProvider gesture ->
+            ( { model | randomGesture = gesture }, Cmd.none )
 
         GenerateNewLesson ->
-            ( model, Random.generate LessonProvider getRandomRow )
+            ( model, Random.generate LessonProvider getRandomGesture )
 
 
-getRandomRow : Generator Row
-getRandomRow =
-    Random.uniform Thumb [ Top ]
+
+-- Note that Gesture would have worked as a type alias Gesture = {a: Hand, b: Row, c: Finger}
+-- The reason for this is that such a type alias for a Record automatically creates a constructor for it.
+-- A constructor will take those arguments in the same order.
+
+
+getRandomGesture : Generator Gesture
+getRandomGesture =
+    Random.map3
+        Ges
+        (Random.uniform Left [ Right ])
+        (Random.uniform Home [ Top, Bottom ])
+        (Random.uniform Middle [ Ring, Little ])
 
 
 getValidWeatherNumber : String -> Int -> Int

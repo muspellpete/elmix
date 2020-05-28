@@ -23,7 +23,7 @@ type Msg
     | UpdateTextMoisture String
     | UpdateTextCloudy String
     | UpdateTextTemperature String
-    | LessonProvider Row
+    | LessonProvider Gesture
     | GenerateNewLesson
 
 
@@ -51,7 +51,6 @@ type Row
     = Home
     | Top
     | Bottom
-    | Thumb
 
 
 type Hand
@@ -74,7 +73,5 @@ type alias Model =
     , inputCloudy : Bool
     , inputTemperature : Int
     , randomFinger : Finger
-    , randomRow : Row
-    , randomModifier : Modifier
-    , randomHand : Hand
+    , randomGesture : Gesture
     }
