@@ -14,7 +14,7 @@ type alias Weather =
 
 
 type Msg
-    = GotResponse Model
+    = GotResponse (RemoteData (Graphql.Http.Error Response) Response)
     | RefreshData
     | ExtraButton
     | AddWeatherButton

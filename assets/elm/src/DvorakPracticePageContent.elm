@@ -17,6 +17,7 @@ body model =
     div []
         [ div [] [ text (getKeyForGesture model.randomGesture) ]
         , div [] [ button [ onClick GenerateNewLesson, class "bg-blue-400" ] [ text "Generate new key" ] ]
+        , div [] [ button [ onClick RefreshData, class "bg-gray-400" ] [ text "Back" ] ]
         ]
 
 

@@ -38,7 +38,7 @@ makeRequest : Cmd Msg
 makeRequest =
     Query.samples samplesInfoSelection
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> { data = x, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }) >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> x) >> GotResponse)
 
 
 
@@ -63,7 +63,7 @@ update msg model =
 
         -- GotResponse currently makes the whole model, which is not necessary, it should just send in the actual changes to the model, which is then applied here
         GotResponse response ->
-            ( response, Cmd.none )
+            ( { data = response, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }, Cmd.none )
 
         Weather.ExtraButton ->
             ( { model | page = Weather.ExtraPage }, Cmd.none )
@@ -204,6 +204,7 @@ createBody response =
                 (button [ onClick Weather.AddWeatherButton, class "bg-green-400 m-4 pl-2 pr-2" ] [ text "Add weather" ]
                     :: button [ onClick Weather.ExtraButton, class "bg-orange-400 m-4 pl-2 pr-2" ] [ text "Extra page" ]
                     :: button [ onClick Weather.PlaygroundButton, class "bg-orange-400 m-4 pl-2 pr-2" ] [ text "Playground page" ]
+                    :: button [ onClick Weather.PracticeDvorak, class "bg-blue-400 m-4 pl-2 pr-2" ] [ text "Practice DVORAK" ]
                     :: (createListNumbers weatherData |> List.map createWeatherLi)
                 )
 
