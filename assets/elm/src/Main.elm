@@ -39,10 +39,14 @@ makeRequest : Cmd Msg
 makeRequest =
     Query.samples samplesInfoSelection
         |> Graphql.Http.queryRequest "/api/graphql"
-        |> Graphql.Http.send (RemoteData.fromResult >> (\x -> x) >> GotResponse)
+        |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 
 
+--|> Graphql.Http.send (\result -> GotResponse (RemoteData.fromResult result))
+--resultExtractor : Result (Error (Response)) (Response) -> Msg
+--resultExtractor result =
+--    GotResponse (RemoteData.fromResult result)
 -- All the crazy redirects should not be necessary, also the anonymous function should just be defined properly for readability
 
 
