@@ -1,6 +1,7 @@
 module DvorakPracticePageContent exposing (..)
 
 import Browser
+import Gesture exposing (Finger(..), Gesture(..), Hand(..), Modifier(..), Row(..))
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)

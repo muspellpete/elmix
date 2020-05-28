@@ -1,6 +1,7 @@
 module Weather exposing (..)
 
 import Api.ScalarCodecs exposing (Id)
+import Gesture exposing (Gesture)
 import Graphql.Http
 import RemoteData exposing (RemoteData)
 
@@ -35,33 +36,6 @@ type Page
     | DvorakPracticePage
 
 
-type Modifier
-    = Still
-    | Inwards
-
-
-type Finger
-    = Index Modifier
-    | Middle
-    | Ring
-    | Little
-
-
-type Row
-    = Home
-    | Top
-    | Bottom
-
-
-type Hand
-    = Left
-    | Right
-
-
-type Gesture
-    = Ges Hand Row Finger
-
-
 type alias Response =
     Maybe (List (Maybe Weather))
 
@@ -72,6 +46,6 @@ type alias Model =
     , inputMoisture : Int -- for input field on UpdateText
     , inputCloudy : Bool
     , inputTemperature : Int
-    , randomFinger : Finger
+    , randomFinger : Gesture.Finger
     , randomGesture : Gesture
     }

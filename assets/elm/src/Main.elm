@@ -7,6 +7,7 @@ import Api.Query as Query
 import Browser
 import DvorakPracticePageContent exposing (pageContent)
 import ExtraPageContent exposing (pageContent)
+import Gesture exposing (Gesture)
 import Graphql.Http exposing (..)
 import Graphql.Http.GraphqlError as GraphqlError
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
@@ -17,7 +18,7 @@ import PlaygroundPageContent exposing (pageContent)
 import Random exposing (Generator)
 import RemoteData exposing (RemoteData)
 import String exposing (concat)
-import Weather exposing (..)
+import Weather exposing (Model, Msg(..), Page, Response, Weather)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 
@@ -47,12 +48,12 @@ makeRequest =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( getDefaultModel, Cmd.none )
+    ( getDefaultModel RemoteData.Loading Weather.DvorakPracticePage, Cmd.none )
 
 
-getDefaultModel : Model
-getDefaultModel =
-    { data = RemoteData.Loading, page = Weather.DvorakPracticePage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }
+getDefaultModel : RemoteData (Graphql.Http.Error Response) Response -> Page -> Model
+getDefaultModel remoteData page =
+    { data = remoteData, page = page, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Gesture.Index Gesture.Still, randomGesture = Gesture.Ges Gesture.Left Gesture.Top Gesture.Little }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -63,7 +64,7 @@ update msg model =
 
         -- GotResponse currently makes the whole model, which is not necessary, it should just send in the actual changes to the model, which is then applied here
         GotResponse response ->
-            ( { data = response, page = Weather.ResultPage, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Index Still, randomGesture = Ges Left Top Little }, Cmd.none )
+            ( getDefaultModel response Weather.ResultPage, Cmd.none )
 
         Weather.ExtraButton ->
             ( { model | page = Weather.ExtraPage }, Cmd.none )
@@ -103,10 +104,10 @@ update msg model =
 getRandomGesture : Generator Gesture
 getRandomGesture =
     Random.map3
-        Ges
-        (Random.uniform Left [ Right ])
-        (Random.uniform Home [ Top, Bottom ])
-        (Random.uniform Middle [ Ring, Little ])
+        Gesture.Ges
+        (Random.uniform Gesture.Left [ Gesture.Right ])
+        (Random.uniform Gesture.Home [ Gesture.Top, Gesture.Bottom ])
+        (Random.uniform Gesture.Middle [ Gesture.Ring, Gesture.Little ])
 
 
 getValidWeatherNumber : String -> Int -> Int
