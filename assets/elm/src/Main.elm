@@ -59,7 +59,16 @@ init _ =
 
 getDefaultModel : RemoteData (Graphql.Http.Error Response) Response -> Page -> Model
 getDefaultModel remoteData page =
-    { data = remoteData, page = page, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Gesture.Index Gesture.Still, randomGesture = Gesture.Ges Gesture.Left Gesture.Top Gesture.Little, lessonMode = TypeGesture }
+    { data = remoteData
+    , page = page
+    , inputMoisture = 0
+    , inputCloudy = False
+    , inputTemperature = 0
+    , randomFinger = Gesture.Index Gesture.Still
+    , randomGesture = Gesture.Ges Gesture.Left Gesture.Top Gesture.Little
+    , lessonMode = TypeGesture
+    , previousPress = ""
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -104,16 +113,15 @@ update msg model =
                 TypeGesture ->
                     ( { model | lessonMode = mode }, Random.generate LessonProvider getRandomGesture )
 
-                GuessLetter ->
+                TypeLetterDirectly ->
                     ( { model | lessonMode = mode }, Cmd.none )
 
         UserPressedKey key ->
             if key == Gesture.getKeyForGesture model.randomGesture then
-                -- Generate new lesson when you get it right
-                ( model, Random.generate LessonProvider getRandomGesture )
+                ( { model | previousPress = key }, Random.generate LessonProvider getRandomGesture )
 
             else
-                ( model, Cmd.none )
+                ( { model | previousPress = "wrong" }, Cmd.none )
 
 
 

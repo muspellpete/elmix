@@ -16,23 +16,37 @@ pageContent model =
 body : Model -> Html Msg
 body model =
     div []
-        [ div [] [ createLesson model.lessonMode model.randomGesture ]
-        , div [] [ button [ onClick GenerateNewLesson, class "bg-blue-400" ] [ text "Generate new key" ] ]
+        [ div [] [ createLesson model.lessonMode model.randomGesture model.previousPress ]
+        , div []
+            [ button
+                [ if model.lessonMode == TypeLetterDirectly then
+                    onClick <| ChangeLessonMode TypeGesture
+
+                  else
+                    onClick <| ChangeLessonMode TypeLetterDirectly
+                , class "bg-blue-400"
+                ]
+                [ text "Switch mode" ]
+            ]
         , div [] [ button [ onClick RefreshData, class "bg-gray-400" ] [ text "Back" ] ]
         ]
 
 
-createLesson : LessonMode -> Gesture -> Html msg
-createLesson mode gesture =
+createLesson : LessonMode -> Gesture -> String -> Html msg
+createLesson mode gesture previousPress =
     case mode of
         TypeGesture ->
             div []
                 [ div [ class "font-bold" ] [ text "Type this key, if you get it right it will change: " ]
                 , div [ class "m-4" ] [ gesture |> gestureToString |> text ]
+                , div [ class "m-4" ] [ text ("The previous key was: " ++ previousPress) ]
                 ]
 
-        GuessLetter ->
-            text (gestureToString gesture)
+        TypeLetterDirectly ->
+            div []
+                [ div [ class "font-bold" ] [ text "Type this key, if you get it right it will change: " ]
+                , div [ class "m-2 px-2 bg-green-400 w-5 text-left" ] [ gesture |> Gesture.getKeyForGesture |> text ]
+                ]
 
 
 gestureToString : Gesture -> String

@@ -45,7 +45,7 @@ type Page
 
 type LessonMode
     = TypeGesture
-    | GuessLetter
+    | TypeLetterDirectly
 
 
 type alias Response =
@@ -61,4 +61,5 @@ type alias Model =
     , randomFinger : Gesture.Finger
     , randomGesture : Gesture
     , lessonMode : LessonMode
+    , previousPress : String
     }
