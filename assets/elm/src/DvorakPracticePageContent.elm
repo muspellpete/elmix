@@ -16,10 +16,23 @@ pageContent model =
 body : Model -> Html Msg
 body model =
     div []
-        [ div [] [ text (gestureToString model.randomGesture) ]
+        [ div [] [ createLesson model.lessonMode model.randomGesture ]
         , div [] [ button [ onClick GenerateNewLesson, class "bg-blue-400" ] [ text "Generate new key" ] ]
         , div [] [ button [ onClick RefreshData, class "bg-gray-400" ] [ text "Back" ] ]
         ]
+
+
+createLesson : LessonMode -> Gesture -> Html msg
+createLesson mode gesture =
+    case mode of
+        TypeGesture ->
+            div []
+                [ div [ class "font-bold" ] [ text "Type this key, if you get it right it will change: " ]
+                , div [ class "m-4" ] [ gesture |> gestureToString |> text ]
+                ]
+
+        GuessLetter ->
+            text (gestureToString gesture)
 
 
 gestureToString : Gesture -> String

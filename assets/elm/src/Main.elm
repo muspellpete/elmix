@@ -20,7 +20,7 @@ import PlaygroundPageContent
 import Random exposing (Generator)
 import RemoteData exposing (RemoteData)
 import String exposing (concat)
-import Weather exposing (Key(..), Model, Msg(..), Page, Response, Weather)
+import Weather exposing (Key(..), LessonMode(..), Model, Msg(..), Page, Response, Weather)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 
@@ -59,7 +59,7 @@ init _ =
 
 getDefaultModel : RemoteData (Graphql.Http.Error Response) Response -> Page -> Model
 getDefaultModel remoteData page =
-    { data = remoteData, page = page, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Gesture.Index Gesture.Still, randomGesture = Gesture.Ges Gesture.Left Gesture.Top Gesture.Little }
+    { data = remoteData, page = page, inputMoisture = 0, inputCloudy = False, inputTemperature = 0, randomFinger = Gesture.Index Gesture.Still, randomGesture = Gesture.Ges Gesture.Left Gesture.Top Gesture.Little, lessonMode = TypeGesture }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,145 +99,21 @@ update msg model =
         GenerateNewLesson ->
             ( model, Random.generate LessonProvider getRandomGesture )
 
+        ChangeLessonMode mode ->
+            case mode of
+                TypeGesture ->
+                    ( { model | lessonMode = mode }, Random.generate LessonProvider getRandomGesture )
+
+                GuessLetter ->
+                    ( { model | lessonMode = mode }, Cmd.none )
+
         UserPressedKey key ->
-            if key == getKeyForGesture model.randomGesture then
-                ( model, Random.generate LessonProvider getRandomGesture )
+            if key == Gesture.getKeyForGesture model.randomGesture then
                 -- Generate new lesson when you get it right
+                ( model, Random.generate LessonProvider getRandomGesture )
 
             else
                 ( model, Cmd.none )
-
-
-getKeyForGesture : Gesture -> String
-getKeyForGesture gesture =
-    case gesture of
-        Ges Gesture.Left row finger ->
-            getKeyForLeftHand row finger
-
-        Ges Gesture.Right row finger ->
-            getKeyForRightHand row finger
-
-
-getKeyForLeftHand : Row -> Finger -> String
-getKeyForLeftHand row finger =
-    case row of
-        Home ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "u"
-
-                        Inwards ->
-                            "i"
-
-                Middle ->
-                    "e"
-
-                Ring ->
-                    "o"
-
-                Little ->
-                    "a"
-
-        Top ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "p"
-
-                        Inwards ->
-                            "y"
-
-                Middle ->
-                    "."
-
-                Ring ->
-                    ","
-
-                Little ->
-                    "'"
-
-        Bottom ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "k"
-
-                        Inwards ->
-                            "x"
-
-                Middle ->
-                    "j"
-
-                Ring ->
-                    "q"
-
-                Little ->
-                    ";"
-
-
-getKeyForRightHand : Row -> Finger -> String
-getKeyForRightHand row finger =
-    case row of
-        Home ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "h"
-
-                        Inwards ->
-                            "d"
-
-                Middle ->
-                    "t"
-
-                Ring ->
-                    "n"
-
-                Little ->
-                    "s"
-
-        Top ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "g"
-
-                        Inwards ->
-                            "f"
-
-                Middle ->
-                    "c"
-
-                Ring ->
-                    "r"
-
-                Little ->
-                    "l"
-
-        Bottom ->
-            case finger of
-                Index modifier ->
-                    case modifier of
-                        Still ->
-                            "m"
-
-                        Inwards ->
-                            "b"
-
-                Middle ->
-                    "w"
-
-                Ring ->
-                    "v"
-
-                Little ->
-                    "z"
 
 
 
@@ -279,25 +155,10 @@ getValidWeatherBool newString oldBool =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Decode.field "key" Decode.string
         |> Decode.map (\m -> UserPressedKey m)
         |> onKeyDown
-
-
-keyDecoder : Decode.Decoder Key
-keyDecoder =
-    Decode.map toKey (Decode.field "key" Decode.string)
-
-
-toKey : String -> Weather.Key
-toKey string =
-    case String.uncons string of
-        Just ( char, "" ) ->
-            Character char
-
-        _ ->
-            Control string
 
 
 view : Model -> Browser.Document Msg

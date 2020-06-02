@@ -32,6 +32,7 @@ type Msg
     | LessonProvider Gesture
     | GenerateNewLesson
     | UserPressedKey String
+    | ChangeLessonMode LessonMode
 
 
 type Page
@@ -40,6 +41,11 @@ type Page
     | AddWeatherPage
     | PlaygroundPage
     | DvorakPracticePage
+
+
+type LessonMode
+    = TypeGesture
+    | GuessLetter
 
 
 type alias Response =
@@ -54,4 +60,5 @@ type alias Model =
     , inputTemperature : Int
     , randomFinger : Gesture.Finger
     , randomGesture : Gesture
+    , lessonMode : LessonMode
     }
