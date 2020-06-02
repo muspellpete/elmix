@@ -1,24 +1,26 @@
 module Main exposing (..)
 
-import AddWeatherPageContent exposing (pageContent)
+import AddWeatherPageContent
 import Api.Object
 import Api.Object.WeatherType as WeatherType
 import Api.Query as Query
 import Browser
-import DvorakPracticePageContent exposing (pageContent)
-import ExtraPageContent exposing (pageContent)
-import Gesture exposing (Gesture)
+import Browser.Events exposing (onKeyDown)
+import DvorakPracticePageContent
+import ExtraPageContent
+import Gesture exposing (Finger(..), Gesture(..), Hand(..), Modifier(..), Row(..))
 import Graphql.Http exposing (..)
 import Graphql.Http.GraphqlError as GraphqlError
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (Html, button, div, text, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import PlaygroundPageContent exposing (pageContent)
+import Json.Decode as Decode
+import PlaygroundPageContent
 import Random exposing (Generator)
 import RemoteData exposing (RemoteData)
 import String exposing (concat)
-import Weather exposing (Model, Msg(..), Page, Response, Weather)
+import Weather exposing (Key(..), Model, Msg(..), Page, Response, Weather)
 import WeatherPage exposing (createListNumbers, createWeatherLi)
 
 
@@ -52,7 +54,7 @@ makeRequest =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( getDefaultModel RemoteData.Loading Weather.DvorakPracticePage, Cmd.none )
+    ( getDefaultModel RemoteData.Loading Weather.DvorakPracticePage, Random.generate LessonProvider getRandomGesture )
 
 
 getDefaultModel : RemoteData (Graphql.Http.Error Response) Response -> Page -> Model
@@ -66,7 +68,6 @@ update msg model =
         RefreshData ->
             ( { model | page = Weather.ResultPage }, makeRequest )
 
-        -- GotResponse currently makes the whole model, which is not necessary, it should just send in the actual changes to the model, which is then applied here
         GotResponse response ->
             ( getDefaultModel response Weather.ResultPage, Cmd.none )
 
@@ -97,6 +98,146 @@ update msg model =
 
         GenerateNewLesson ->
             ( model, Random.generate LessonProvider getRandomGesture )
+
+        UserPressedKey key ->
+            if key == getKeyForGesture model.randomGesture then
+                ( model, Random.generate LessonProvider getRandomGesture )
+                -- Generate new lesson when you get it right
+
+            else
+                ( model, Cmd.none )
+
+
+getKeyForGesture : Gesture -> String
+getKeyForGesture gesture =
+    case gesture of
+        Ges Gesture.Left row finger ->
+            getKeyForLeftHand row finger
+
+        Ges Gesture.Right row finger ->
+            getKeyForRightHand row finger
+
+
+getKeyForLeftHand : Row -> Finger -> String
+getKeyForLeftHand row finger =
+    case row of
+        Home ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "u"
+
+                        Inwards ->
+                            "i"
+
+                Middle ->
+                    "e"
+
+                Ring ->
+                    "o"
+
+                Little ->
+                    "a"
+
+        Top ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "p"
+
+                        Inwards ->
+                            "y"
+
+                Middle ->
+                    "."
+
+                Ring ->
+                    ","
+
+                Little ->
+                    "'"
+
+        Bottom ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "k"
+
+                        Inwards ->
+                            "x"
+
+                Middle ->
+                    "j"
+
+                Ring ->
+                    "q"
+
+                Little ->
+                    ";"
+
+
+getKeyForRightHand : Row -> Finger -> String
+getKeyForRightHand row finger =
+    case row of
+        Home ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "h"
+
+                        Inwards ->
+                            "d"
+
+                Middle ->
+                    "t"
+
+                Ring ->
+                    "n"
+
+                Little ->
+                    "s"
+
+        Top ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "g"
+
+                        Inwards ->
+                            "f"
+
+                Middle ->
+                    "c"
+
+                Ring ->
+                    "r"
+
+                Little ->
+                    "l"
+
+        Bottom ->
+            case finger of
+                Index modifier ->
+                    case modifier of
+                        Still ->
+                            "m"
+
+                        Inwards ->
+                            "b"
+
+                Middle ->
+                    "w"
+
+                Ring ->
+                    "v"
+
+                Little ->
+                    "z"
 
 
 
@@ -135,6 +276,28 @@ getValidWeatherBool newString oldBool =
 
     else
         True
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Decode.field "key" Decode.string
+        |> Decode.map (\m -> UserPressedKey m)
+        |> onKeyDown
+
+
+keyDecoder : Decode.Decoder Key
+keyDecoder =
+    Decode.map toKey (Decode.field "key" Decode.string)
+
+
+toKey : String -> Weather.Key
+toKey string =
+    case String.uncons string of
+        Just ( char, "" ) ->
+            Character char
+
+        _ ->
+            Control string
 
 
 view : Model -> Browser.Document Msg
@@ -216,4 +379,4 @@ createBody response =
 
 main : Program Flags Model Msg
 main =
-    Browser.document { init = init, update = update, subscriptions = \_ -> Sub.none, view = view }
+    Browser.document { init = init, update = update, subscriptions = subscriptions, view = view }

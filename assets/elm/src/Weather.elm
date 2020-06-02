@@ -6,6 +6,11 @@ import Graphql.Http
 import RemoteData exposing (RemoteData)
 
 
+type Key
+    = Character Char
+    | Control String
+
+
 type alias Weather =
     { moisture : Int
     , cloudy : Bool
@@ -26,6 +31,7 @@ type Msg
     | UpdateTextTemperature String
     | LessonProvider Gesture
     | GenerateNewLesson
+    | UserPressedKey String
 
 
 type Page
